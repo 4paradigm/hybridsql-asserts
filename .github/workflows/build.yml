@@ -25,8 +25,8 @@ jobs:
 
       - name: setup bazel
         run: |
-          sudo curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
-          sudo chmod +x /usr/local/bin/bazel
+          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
+          chmod +x /usr/local/bin/bazel
 
       - name: download
         run: |
