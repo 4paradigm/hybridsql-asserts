@@ -23,7 +23,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            src/
+            src/*.tar.*
+            src/*.zip
           key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
 
       - name: Setup cmake
@@ -58,7 +59,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            src/
+            src/*.tar.*
+            src/*.zip
           key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
 
       - name: Setup cmake
@@ -93,7 +95,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            src/
+            src/*.tar.*
+            src/*.zip
           key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
 
       - name: download
