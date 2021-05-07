@@ -13,7 +13,7 @@ jobs:
   build-thirdparty:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforverd/hybridsql-base:0.0.1
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
 
     steps:
       - uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
   build-llvm:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforverd/hybridsql-base:0.0.1
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
     steps:
       - uses: actions/checkout@v2
 
@@ -74,7 +74,7 @@ jobs:
   build-boost:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforverd/hybridsql-base:0.0.1
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
     steps:
       - uses: actions/checkout@v2
 
