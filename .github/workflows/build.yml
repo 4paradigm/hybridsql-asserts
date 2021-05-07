@@ -35,7 +35,7 @@ jobs:
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
-          sha256sum src/* > src/sha256sum
+          sha256sum src/*.tar.* src/*.zip > src/sha256sum
 
       - name: build
         run: |
@@ -70,7 +70,7 @@ jobs:
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
-          sha256sum src/* > src/sha256sum
+          sha256sum src/*.tar.* src/*.zip > src/sha256sum
 
       - name: build llvm
         run: |
@@ -100,7 +100,7 @@ jobs:
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
-          sha256sum src/* > src/sha256sum
+          sha256sum src/*.tar.* src/*.zip > src/sha256sum
 
       - name: build boost
         run: |
