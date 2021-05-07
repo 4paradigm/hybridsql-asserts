@@ -25,7 +25,7 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.8
@@ -36,7 +36,6 @@ jobs:
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
-          sha256sum src/*.tar.* src/*.zip > src/sha256sum
 
       - name: build
         run: |
@@ -61,7 +60,7 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.8
@@ -72,7 +71,6 @@ jobs:
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
-          sha256sum src/*.tar.* src/*.zip > src/sha256sum
 
       - name: build llvm
         run: |
@@ -97,13 +95,12 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
-          sha256sum src/*.tar.* src/*.zip > src/sha256sum
 
       - name: build boost
         run: |
