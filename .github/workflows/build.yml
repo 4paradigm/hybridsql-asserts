@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - v*
+      - v*.*.*
 
   pull_request:
 
@@ -39,7 +39,12 @@ jobs:
 
       - name: build
         run: |
-          ./install_deps.sh
+          ./pack_thirdparty.sh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: thirdparty.tar.gz
 
   build-llvm:
     runs-on: ubuntu-latest
@@ -71,6 +76,11 @@ jobs:
         run: |
           ./pack_llvm.sh
 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: llvm-*.tar.gz
+
   build-boost:
     runs-on: ubuntu-latest
     container:
@@ -95,3 +105,34 @@ jobs:
       - name: build boost
         run: |
           ./pack_boost.sh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: boost-*.tar.gz
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: ['build-thirdparty', 'build-llvm', 'build-boost']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Determine Version
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo $VERSION | sed -e 's/^v//')
+          echo "TAG=$VERSION" >> $GITHUB_ENV
+          mv thirdparty.tar.gz thirdparty-${{ env.TAG }}.tar.gz
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            *.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

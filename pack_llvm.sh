@@ -31,4 +31,4 @@ popd
 
 popd
 
-tar czf llvm-$VERSION-bin.tar.gz "$DEPS_PREFIX"
+tar czf llvm-$VERSION-bin.tar.gz "llvm-$VERSION/"

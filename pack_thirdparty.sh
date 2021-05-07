@@ -287,3 +287,5 @@ find "$DEPS_PREFIX"/lib/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLT
 find "$DEPS_PREFIX"/lib64/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
 
 popd
+
+tar czf thirdparty.tar.gz thirdparty/

@@ -41,4 +41,4 @@ popd
 
 popd
 
-tar czf boost-$VERSION-bin.tar.gz "$DEPS_PREFIX"
+tar czf boost-$VERSION-bin.tar.gz "boost-$VERSION/"
