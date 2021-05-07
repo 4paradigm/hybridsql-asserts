@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# the script will install boost and baidu-common together
+
 set -e
+
 
 cd "$(dirname "$0")"
 
@@ -20,12 +23,19 @@ DEPS_SOURCE="$PWD/src"
 DEPS_PREFIX="$PWD/boost-$VERSION"
 
 pushd "$DEPS_SOURCE"
-tar -zxf boost_1_69_0.tar.gz
 
+tar -zxf boost_1_69_0.tar.gz
 pushd boost_1_69_0
 
 ./bootstrap.sh
 ./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX"
+
+popd
+
+tar xzf common-1.0.0.tar.gz
+pushd common-1.0.0
+
+make -j"$(nproc)" INCLUDE_PATH="-Iinclude -I$DEPS_PREFIX/include" PREFIX="$DEPS_PREFIX" install
 
 popd
 

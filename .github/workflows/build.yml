@@ -10,40 +10,87 @@ on:
   pull_request:
 
 jobs:
-  build-scripts:
+  build-thirdparty:
     runs-on: ubuntu-latest
     container:
-      image: centos:7
+      image: ghcr.io/aceforverd/hybridsql-base:0.0.1
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/
+          key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.8
         with:
           cmake-version: '3.20.x'
 
-      - name: prepare build dependencies
-        run: |
-          yum install -y centos-release-scl epel-release
-          yum install -y devtoolset-8 rh-git218 flex autoconf automake unzip bc expect libtool rh-python38-python-devel gettext byacc xz tcl cppunit-devel rh-python38-python-wheel
-
-      - name: setup bazel
-        run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazel
-
       - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
+          sha256sum src/* > src/sha256sum
 
       - name: build
         run: |
           ./install_deps.sh
 
+  build-llvm:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforverd/hybridsql-base:0.0.1
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/
+          key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.8
+        with:
+          cmake-version: '3.20.x'
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+          sha256sum src/* > src/sha256sum
+
       - name: build llvm
         run: |
           ./pack_llvm.sh
+
+  build-boost:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforverd/hybridsql-base:0.0.1
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/
+          key: ${{ runner.os }}-${{ hashFiles('src/sha256sum') }}
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+          sha256sum src/* > src/sha256sum
 
       - name: build boost
         run: |

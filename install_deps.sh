@@ -281,13 +281,6 @@ else
 	touch sqlite_succ
 fi
 
-echo "installing common"
-tar xzf common-1.0.0.tar.gz
-pushd common-1.0.0
-make -j"$(nproc)" INCLUDE_PATH="-Iinclude -I$DEPS_PREFIX/include" PREFIX="$DEPS_PREFIX" install
-popd
-echo "common installed"
-
 
 # Remove dynamic library files for static link
 find "$DEPS_PREFIX"/lib/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
