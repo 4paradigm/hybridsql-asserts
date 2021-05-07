@@ -12,8 +12,16 @@ on:
 jobs:
   build-scripts:
     runs-on: ubuntu-latest
+    container:
+      image: centos:7
+
     steps:
       - uses: actions/checkout@v2
+
+      - name: prepare build dependencies
+        run: |
+          yum install -y centos-release-scl epel-release
+          yum install -y devtoolset-8 rh-git218 flex autoconf automake unzip bc expect libtool rh-python38-python-devel gettext byacc xz tcl cppunit-devel rh-python38-python-wheel
 
       - name: setup bazel
         run: |

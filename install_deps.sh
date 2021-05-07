@@ -22,6 +22,16 @@ set -x
 
 cd "$(dirname "$0")"
 
+if [ -d '/opt/rh/devtoolset-8' ] ; then
+    # shellcheck disable=SC1091
+    source /opt/rh/devtoolset-8/enable
+fi
+
+if [ -d '/opt/rh/rh-python38' ] ; then
+    # shellcheck disable=SC1091
+    source /opt/rh/rh-python38/enable
+fi
+
 DEPS_SOURCE="$PWD/src"
 DEPS_PREFIX="$PWD/usr"
 DEPS_CONFIG="--prefix=$DEPS_PREFIX --disable-shared --with-pic"
