@@ -1,0 +1,29 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
+  pull_request:
+
+jobs:
+  build-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: setup bazel
+        run: |
+          sudo curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
+          sudo chmod +x /usr/local/bin/bazel
+
+      - name: download
+        run: |
+          ./fetch_resource.sh
+
+      - name: build
+        run: |
+          ./install_deps.sh
