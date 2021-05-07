@@ -33,7 +33,7 @@ if [ -d '/opt/rh/rh-python38' ] ; then
 fi
 
 DEPS_SOURCE="$PWD/src"
-DEPS_PREFIX="$PWD/usr"
+DEPS_PREFIX="$PWD/thirdparty"
 DEPS_CONFIG="--prefix=$DEPS_PREFIX --disable-shared --with-pic"
 
 export CXXFLAGS=" -O3 -fPIC"
@@ -279,30 +279,6 @@ else
 	make -j"$(nproc)" && make install
 	popd
 	touch sqlite_succ
-fi
-
-if [ -f "llvm_succ" ]; then
-	echo "llvm_exist"
-else
-	tar xf llvm-9.0.0.src.tar.xz
-	pushd llvm-9.0.0.src
-	mkdir -p build && cd build
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DLLVM_TARGETS_TO_BUILD=X86  -DCMAKE_CXX_FLAGS=-fPIC ..
-	make "-j$(nproc)"
-	make install
-	popd
-	touch llvm_succ
-fi
-
-if [ -f "boost_succ" ]; then
-	echo "boost exist"
-else
-	tar -zxf boost_1_69_0.tar.gz
-	pushd boost_1_69_0
-	./bootstrap.sh
-	./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX"
-	popd
-	touch boost_succ
 fi
 
 echo "installing common"

@@ -40,3 +40,11 @@ jobs:
       - name: build
         run: |
           ./install_deps.sh
+
+      - name: build llvm
+        run: |
+          ./pack_llvm.sh
+
+      - name: build boost
+        run: |
+          ./pack_boost.sh
