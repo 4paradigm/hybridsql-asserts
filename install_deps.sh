@@ -201,20 +201,20 @@ else
 	echo "brpc done"
 fi
 
-if [ -f "zk_succ" ]
-then
-    echo "zk exist"
-else
-    tar -zxf apache-zookeeper-3.4.14.tar.gz
-    pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
-    autoreconf -if
-    ./configure --prefix="$DEPS_PREFIX"
-    make -j"$(nproc)"
-    make install
-    popd
-    touch zk_succ
-    echo "installed zookeeper c"
-fi
+# if [ -f "zk_succ" ]
+# then
+#     echo "zk exist"
+# else
+#     tar -zxf apache-zookeeper-3.4.14.tar.gz
+#     pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
+#     autoreconf -if
+#     ./configure --prefix="$DEPS_PREFIX"
+#     make -j"$(nproc)"
+#     make install
+#     popd
+#     touch zk_succ
+#     echo "installed zookeeper c"
+# fi
 
 if [ -f "bison_succ" ]; then
 	echo "bison exist"
