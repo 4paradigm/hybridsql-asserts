@@ -167,7 +167,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: ['build-thirdparty', 'build-llvm', 'build-boost']
+    needs: ['build-thirdparty', 'build-llvm', 'build-boost', 'build-zetasql']
     steps:
       - uses: actions/checkout@v2
 
