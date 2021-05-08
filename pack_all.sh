@@ -11,7 +11,7 @@ INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)"
 export OUT="$ROOT/$WORKDIR/$INSTALL_DIR"
 unpack_and_install() {
     local name=$1
-    tar xzf "$name-*.tar.gz"
+    find . -maxdepth 1 -type f -iname "$name*.tar.gz" -exec tar xzf {} \;
     pushd "$name-*"
     find . -type f -exec install -D {} "$OUT"/{} \;
     popd
