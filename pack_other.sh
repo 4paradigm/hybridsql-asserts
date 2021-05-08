@@ -35,7 +35,7 @@ fi
 VERSION=$(date +%Y-%m-%d)
 
 DEPS_SOURCE="$PWD/src"
-DEPS_PREFIX="$PWD/other-$VERSION"
+DEPS_PREFIX="$PWD/libother-$VERSION"
 DEPS_CONFIG="--prefix=$DEPS_PREFIX --disable-shared --with-pic"
 
 export CXXFLAGS=" -O3 -fPIC"
