@@ -179,13 +179,12 @@ jobs:
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
-          echo "TAG=$VERSION" >> $GITHUB_ENV
-          mv thirdparty.tar.gz thirdparty-${{ env.TAG }}.tar.gz
+          mv thirdparty.tar.gz thirdparty-$VERSION.tar.gz
+          mv libzetasql.tar.gz libzetasql-$VERSION.tar.gz
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
           files: |
             artifact/*.tar.gz
         env:
