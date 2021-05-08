@@ -111,6 +111,52 @@ jobs:
         with:
           path: boost-*.tar.gz
 
+  build-zetasql:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+    env:
+      BAZEL_LINKOPTS: '-static-libstdc++:-lm'
+      BAZEL_LINKLIBS: '-l%:libstdc++.a'
+      target: '//zetasql/parser/...'
+      build_argv: ''
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: Setup Bazel
+        run: |
+          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
+          chmod +x /usr/local/bin/bazel
+
+      - name: build zetasql
+        run: |
+          source /opt/rh/devtoolset-8/enable
+          source /opt/rh/rh-python38/enable
+          bazel build ${{ env.build_argv }} ${{ env.target }}
+
+      - name: pack libzetasql
+        run: |
+          ./pack_zetasql.sh
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          path: zetasql-*.tar.gz
+
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')

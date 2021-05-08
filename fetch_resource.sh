@@ -69,6 +69,8 @@ fetch https://github.com/openssl/openssl/archive/OpenSSL_1_1_0.zip OpenSSL_1_1_0
 fetch https://github.com/google/glog/archive/refs/tags/v0.4.0.tar.gz glog-0.4.0.tar.gz
 # bison
 fetch https://ftp.gnu.org/gnu/bison/bison-3.4.tar.gz bison-3.4.tar.gz
+# absl
+fetch https://github.com/abseil/abseil-cpp/archive/a50ae369a30f99f79d7559002aba3413dac1bd48.tar.gz absl.tar.gz
 
 # swig
 fetch https://github.com/swig/swig/archive/v4.0.1.tar.gz swig-4.0.1.tar.gz
@@ -80,7 +82,7 @@ fetch https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.6.3.tar.gz
 fetch https://github.com/sqlite/sqlite/archive/version-3.32.3.zip sqlite-3.32.3.zip
 
 # protobuf
-fetch https://github.com/protocolbuffers/protobuf/releases/download/v2.6.1/protobuf-2.6.1.tar.gz protobuf-2.6.1.tar.gz
+fetch https://github.com/protocolbuffers/protobuf/archive/v3.6.1.3.tar.gzprotobuf-3.6.1.3.tar.gz
 
 # llvm
 fetch https://releases.llvm.org/9.0.0/llvm-9.0.0.src.tar.xz llvm-9.0.0.src.tar.xz
@@ -102,5 +104,7 @@ fetch https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.1
 
 # baidu common
 fetch https://github.com/4paradigm/common/archive/refs/tags/v1.0.0.tar.gz common-1.0.0.tar.gz
+
+fetch https://github.com/google/zetasql/archive/5ccb05880e72ab9ff75dd6b05d7b0acce53f1ea2.zip zetasql.zip
 
 popd

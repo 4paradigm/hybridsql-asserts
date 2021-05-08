@@ -104,10 +104,10 @@ if [ -f "protobuf_succ" ]; then
 	echo "protobuf exist"
 else
 	echo "start install protobuf ..."
-	tar zxf protobuf-2.6.1.tar.gz
+	tar zxf protobuf-3.6.1.3.tar.gz
 
-	pushd protobuf-2.6.1
-	./configure $DEPS_CONFIG CPPFLAGS=-I${DEPS_PREFIX}/include LDFLAGS=-L${DEPS_PREFIX}/lib
+	pushd protobuf-*
+    ./autogen.sh && ./configure --disable-shared --with-pic --prefix "${DEPS_PREFIX}" CPPFLAGS=-I"$DEPS_PREFIX/include" LDFLAGS=-L"$DEPS_PREFIX/lib"
 	make -j"$(nproc)"
 	make install
 	popd
@@ -186,6 +186,16 @@ else
 	echo "openssl done"
 fi
 
+tar xf absl.tar.gz
+pushd absl-*
+cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=17 -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_RUN_TESTS=OFF \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+cmake --build .
+cmake --build . --target install
+popd
+
 if [ -f "brpc_succ" ]; then
 	echo "brpc exist"
 else
@@ -200,21 +210,6 @@ else
 	touch brpc_succ
 	echo "brpc done"
 fi
-
-# if [ -f "zk_succ" ]
-# then
-#     echo "zk exist"
-# else
-#     tar -zxf apache-zookeeper-3.4.14.tar.gz
-#     pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
-#     autoreconf -if
-#     ./configure --prefix="$DEPS_PREFIX"
-#     make -j"$(nproc)"
-#     make install
-#     popd
-#     touch zk_succ
-#     echo "installed zookeeper c"
-# fi
 
 if [ -f "bison_succ" ]; then
 	echo "bison exist"
