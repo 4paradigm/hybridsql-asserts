@@ -187,7 +187,7 @@ else
 fi
 
 tar xf absl.tar.gz
-pushd absl-*
+pushd abseil-cpp-*
 cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_STANDARD=17 -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_RUN_TESTS=OFF \
