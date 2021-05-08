@@ -41,7 +41,6 @@ export -f install_lib
 export -f install_external_lib
 
 pushd "$SRC"
-unzip zetasql.zip
 pushd zetasql-*
 
 pushd bazel-bin/

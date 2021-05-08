@@ -146,6 +146,9 @@ jobs:
         run: |
           source /opt/rh/devtoolset-8/enable
           source /opt/rh/rh-python38/enable
+          cd src
+          unzip zetasql.zip
+          cd zetasql-*
           bazel build ${{ env.build_argv }} ${{ env.target }}
 
       - name: pack libzetasql
