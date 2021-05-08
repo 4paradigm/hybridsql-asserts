@@ -39,13 +39,13 @@ jobs:
 
       - name: build
         run: |
-          ./pack_thirdparty.sh
+          ./pack_other.sh
 
       - name: Upload Artifact
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
-          path: thirdparty.tar.gz
+          path: libother-*.tar.gz
 
   build-llvm:
     runs-on: ubuntu-latest
@@ -179,8 +179,10 @@ jobs:
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
-          mv thirdparty.tar.gz thirdparty-$VERSION.tar.gz
-          mv libzetasql.tar.gz libzetasql-$VERSION.tar.gz
+
+      - name: Pack All
+        run: |
+          ./pack_all.sh
 
       - name: Release
         uses: softprops/action-gh-release@v1

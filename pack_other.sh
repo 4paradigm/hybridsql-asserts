@@ -32,8 +32,10 @@ if [ -d '/opt/rh/rh-python38' ] ; then
     source /opt/rh/rh-python38/enable
 fi
 
+VERSION=$(date +%Y-%m-%d)
+
 DEPS_SOURCE="$PWD/src"
-DEPS_PREFIX="$PWD/thirdparty"
+DEPS_PREFIX="$PWD/other-$VERSION"
 DEPS_CONFIG="--prefix=$DEPS_PREFIX --disable-shared --with-pic"
 
 export CXXFLAGS=" -O3 -fPIC"
@@ -283,4 +285,4 @@ find "$DEPS_PREFIX"/lib64/ -name "lib*so*" | grep -v "libRemarks" | grep -v "lib
 
 popd
 
-tar czf thirdparty.tar.gz thirdparty/
+tar czf "libother-$VERSION.tar.gz" "libother-$VERSION"/

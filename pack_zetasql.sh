@@ -5,8 +5,9 @@
 set -eE
 
 cd "$(dirname "$0")"
+VERSION=$(date +%Y-%m-%d)
 export ROOT=$(pwd)
-export PREFIX="$ROOT/zetasql"
+export PREFIX="$ROOT/zetasql-$VERSION"
 SRC="$ROOT/src"
 
 rm -rf tmp-lib libzetasql.mri
@@ -85,4 +86,4 @@ mv libzetasql.a "$PREFIX/lib"
 popd
 
 
-tar czf libzetasql.tar.gz zetasql/
+tar czf "libzetasql-$VERSION.tar.gz" "zetasql-$VERSION"/
