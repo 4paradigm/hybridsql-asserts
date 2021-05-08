@@ -82,8 +82,6 @@ ar -M <libzetasql.mri
 ranlib libzetasql.a
 mv libzetasql.a "$PREFIX/lib"
 
-mv tmp-lib/libzetasql_public_templated_sql_tvf.so "$PREFIX/lib"
-
 popd
 
 
