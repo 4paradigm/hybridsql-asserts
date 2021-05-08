@@ -42,7 +42,7 @@ jobs:
           ./pack_thirdparty.sh
 
       - name: Upload Artifact
-        if: ${{ github.event_name = 'push' }}
+        if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
           path: thirdparty.tar.gz
@@ -78,7 +78,7 @@ jobs:
           ./pack_llvm.sh
 
       - name: Upload Artifact
-        if: ${{ github.event_name = 'push' }}
+        if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
           path: llvm-*.tar.gz
@@ -109,7 +109,7 @@ jobs:
           ./pack_boost.sh
 
       - name: Upload Artifact
-        if: ${{ github.event_name = 'push' }}
+        if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
           path: boost-*.tar.gz
@@ -159,7 +159,7 @@ jobs:
           ./pack_zetasql.sh
 
       - name: Upload
-        if: ${{ github.event_name = 'push' }}
+        if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
           path: zetasql-*.tar.gz
