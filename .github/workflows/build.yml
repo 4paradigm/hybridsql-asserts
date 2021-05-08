@@ -162,7 +162,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
-          path: libzetasql.tar.gz
+          path: libzetasql-*.tar.gz
 
   release:
     runs-on: ubuntu-latest
