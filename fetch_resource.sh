@@ -82,7 +82,7 @@ fetch https://github.com/jbeder/yaml-cpp/archive/refs/tags/yaml-cpp-0.6.3.tar.gz
 fetch https://github.com/sqlite/sqlite/archive/version-3.32.3.zip sqlite-3.32.3.zip
 
 # protobuf
-fetch https://github.com/protocolbuffers/protobuf/archive/v3.6.1.3.tar.gzprotobuf-3.6.1.3.tar.gz
+fetch https://github.com/protocolbuffers/protobuf/archive/v3.6.1.3.tar.gz protobuf-3.6.1.3.tar.gz
 
 # llvm
 fetch https://releases.llvm.org/9.0.0/llvm-9.0.0.src.tar.xz llvm-9.0.0.src.tar.xz
