@@ -122,6 +122,7 @@ jobs:
         uses: actions/download-artifact@v2
 
       - name: Determine Version
+        working-directory: artifact
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=$(echo $VERSION | sed -e 's/^v//')
@@ -133,6 +134,6 @@ jobs:
         with:
           draft: true
           files: |
-            *.tar.gz
+            artifact/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
