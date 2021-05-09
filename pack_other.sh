@@ -22,8 +22,20 @@ set -x
 
 cd "$(dirname "$0")"
 
+if [ -d '/opt/rh/devtoolset-8' ] ; then
+    # shellcheck disable=SC1091
+    source /opt/rh/devtoolset-8/enable
+fi
+
+if [ -d '/opt/rh/rh-python38' ] ; then
+    # shellcheck disable=SC1091
+    source /opt/rh/rh-python38/enable
+fi
+
+VERSION=$(date +%Y-%m-%d)
+
 DEPS_SOURCE="$PWD/src"
-DEPS_PREFIX="$PWD/usr"
+DEPS_PREFIX="$PWD/libother-$VERSION"
 DEPS_CONFIG="--prefix=$DEPS_PREFIX --disable-shared --with-pic"
 
 export CXXFLAGS=" -O3 -fPIC"
@@ -94,10 +106,10 @@ if [ -f "protobuf_succ" ]; then
 	echo "protobuf exist"
 else
 	echo "start install protobuf ..."
-	tar zxf protobuf-2.6.1.tar.gz
+	tar zxf protobuf-3.6.1.3.tar.gz
 
-	pushd protobuf-2.6.1
-	./configure $DEPS_CONFIG CPPFLAGS=-I${DEPS_PREFIX}/include LDFLAGS=-L${DEPS_PREFIX}/lib
+	pushd protobuf-*
+    ./autogen.sh && ./configure --disable-shared --with-pic --prefix "${DEPS_PREFIX}" CPPFLAGS=-I"$DEPS_PREFIX/include" LDFLAGS=-L"$DEPS_PREFIX/lib"
 	make -j"$(nproc)"
 	make install
 	popd
@@ -176,6 +188,16 @@ else
 	echo "openssl done"
 fi
 
+tar xf absl.tar.gz
+pushd abseil-cpp-*
+cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_STANDARD=17 -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_RUN_TESTS=OFF \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+cmake --build build
+cmake --build build --target install
+popd
+
 if [ -f "brpc_succ" ]; then
 	echo "brpc exist"
 else
@@ -189,21 +211,6 @@ else
 
 	touch brpc_succ
 	echo "brpc done"
-fi
-
-if [ -f "zk_succ" ]
-then
-    echo "zk exist"
-else
-    tar -zxf apache-zookeeper-3.4.14.tar.gz
-    pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
-    autoreconf -if
-    ./configure --prefix="$DEPS_PREFIX"
-    make -j"$(nproc)"
-    make install
-    popd
-    touch zk_succ
-    echo "installed zookeeper c"
 fi
 
 if [ -f "bison_succ" ]; then
@@ -271,40 +278,11 @@ else
 	touch sqlite_succ
 fi
 
-if [ -f "llvm_succ" ]; then
-	echo "llvm_exist"
-else
-	tar xf llvm-9.0.0.src.tar.xz
-	pushd llvm-9.0.0.src
-	mkdir -p build && cd build
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DLLVM_TARGETS_TO_BUILD=X86  -DCMAKE_CXX_FLAGS=-fPIC ..
-	make "-j$(nproc)"
-	make install
-	popd
-	touch llvm_succ
-fi
-
-if [ -f "boost_succ" ]; then
-	echo "boost exist"
-else
-	tar -zxf boost_1_69_0.tar.gz
-	pushd boost_1_69_0
-	./bootstrap.sh
-	./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX"
-	popd
-	touch boost_succ
-fi
-
-echo "installing common"
-tar xzf common-1.0.0.tar.gz
-pushd common-1.0.0
-make -j"$(nproc)" INCLUDE_PATH="-Iinclude -I$DEPS_PREFIX/include" PREFIX="$DEPS_PREFIX" install
-popd
-echo "common installed"
-
 
 # Remove dynamic library files for static link
 find "$DEPS_PREFIX"/lib/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
 find "$DEPS_PREFIX"/lib64/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
 
 popd
+
+tar czf "libother-$VERSION.tar.gz" "libother-$VERSION"/

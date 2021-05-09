@@ -5,25 +5,189 @@ on:
     branches:
       - main
     tags:
-      - v*
+      - v*.*.*
 
   pull_request:
 
 jobs:
-  build-scripts:
+  build-thirdparty:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+
     steps:
       - uses: actions/checkout@v2
 
-      - name: setup bazel
-        run: |
-          sudo curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
-          sudo chmod +x /usr/local/bin/bazel
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.8
+        with:
+          cmake-version: '3.20.x'
 
       - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
           ./fetch_resource.sh
 
       - name: build
         run: |
-          ./install_deps.sh
+          ./pack_other.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: libother-*.tar.gz
+
+  build-llvm:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.8
+        with:
+          cmake-version: '3.20.x'
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build llvm
+        run: |
+          ./pack_llvm.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: llvm-*.tar.gz
+
+  build-boost:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build boost
+        run: |
+          ./pack_boost.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: boost-*.tar.gz
+
+  build-zetasql:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+    env:
+      BAZEL_LINKOPTS: '-static-libstdc++:-lm'
+      BAZEL_LINKLIBS: '-l%:libstdc++.a'
+      target: '//zetasql/parser/...'
+      build_argv: ''
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: Setup Bazel
+        run: |
+          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
+          chmod +x /usr/local/bin/bazel
+
+      - name: build zetasql
+        run: |
+          source /opt/rh/devtoolset-8/enable
+          source /opt/rh/rh-python38/enable
+          cd src
+          unzip zetasql.zip
+          cd zetasql-*
+          bazel build ${{ env.build_argv }} ${{ env.target }}
+
+      - name: pack libzetasql
+        run: |
+          ./pack_zetasql.sh
+
+      - name: Upload
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: libzetasql-*.tar.gz
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: ['build-thirdparty', 'build-llvm', 'build-boost', 'build-zetasql']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Determine Version
+        working-directory: artifact
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+      - name: Pack All
+        run: |
+          ./pack_all.sh
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifact/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
