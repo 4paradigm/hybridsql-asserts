@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eE
+set -x
 
 cd "$(dirname "$0")"
 
@@ -12,7 +13,7 @@ export OUT="$ROOT/$WORKDIR/$INSTALL_DIR"
 unpack_and_install() {
     local name=$1
     find . -maxdepth 1 -type f -iname "$name*.tar.gz" -exec tar xzf {} \;
-    pushd "$name"-*
+    pushd "$name"-*/
     find . -type f -exec install -D {} "$OUT"/{} \;
     popd
 }
