@@ -218,7 +218,7 @@ if [ -f "bison_succ" ]; then
 else
 	tar zxf bison-3.4.tar.gz
 	pushd bison-3.4
-	./configure --prefix="$DEPS_PREFIX"
+	./configure --prefix="$DEPS_PREFIX" --enable-relocatable
 	make install
 	popd
 	touch bison_succ
