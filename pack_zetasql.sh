@@ -69,7 +69,7 @@ popd # bazel-bin
 find zetasql -type f -iname "*.h" -exec install -D {} "$PREFIX"/include/{} \;
 popd # zetasql-*
 
-popd
+popd # SRC
 
 
 pushd "$ROOT"
@@ -82,6 +82,7 @@ echo "end" >> libzetasql.mri
 ar -M <libzetasql.mri
 ranlib libzetasql.a
 mv libzetasql.a "$PREFIX/lib"
+mv tmp-lib/*.so "$PREFIX/lib"
 
 popd
 
