@@ -145,6 +145,10 @@ jobs:
           curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazel
 
+      - name: Install Java
+        run: |
+          yum install -y java-1.8.0-openjdk-devel
+
       - name: build zetasql
         run: |
           source /opt/rh/devtoolset-8/enable
