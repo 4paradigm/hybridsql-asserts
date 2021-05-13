@@ -218,7 +218,7 @@ if [ -f "bison_succ" ]; then
 else
 	tar zxf bison-3.4.tar.gz
 	pushd bison-3.4
-	./configure --prefix="$DEPS_PREFIX"
+	./configure --prefix="$DEPS_PREFIX" --enable-relocatable
 	make install
 	popd
 	touch bison_succ
@@ -278,10 +278,6 @@ else
 	touch sqlite_succ
 fi
 
-
-# Remove dynamic library files for static link
-find "$DEPS_PREFIX"/lib/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
-find "$DEPS_PREFIX"/lib64/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
 
 popd
 

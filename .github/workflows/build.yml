@@ -121,7 +121,7 @@ jobs:
     env:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/parser/...'
+      target: '//zetasql/...'
       build_argv: ''
     steps:
       - uses: actions/checkout@v2
@@ -145,6 +145,10 @@ jobs:
           curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazel
 
+      - name: Install Java
+        run: |
+          yum install -y java-1.8.0-openjdk-devel
+
       - name: build zetasql
         run: |
           source /opt/rh/devtoolset-8/enable
@@ -153,6 +157,10 @@ jobs:
           unzip zetasql.zip
           cd zetasql-*
           bazel build ${{ env.build_argv }} ${{ env.target }}
+
+      - name: Find Orphan Library
+        run: |
+          ./find_orphan_so.sh
 
       - name: pack libzetasql
         run: |
