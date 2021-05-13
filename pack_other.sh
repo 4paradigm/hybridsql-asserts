@@ -279,10 +279,6 @@ else
 fi
 
 
-# Remove dynamic library files for static link
-find "$DEPS_PREFIX"/lib/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
-find "$DEPS_PREFIX"/lib64/ -name "lib*so*" | grep -v "libRemarks" | grep -v "libLTO" | xargs rm
-
 popd
 
 tar czf "libother-$VERSION.tar.gz" "libother-$VERSION"/
