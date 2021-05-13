@@ -61,13 +61,13 @@ find com_googlesource_code_re2 -type f -iregex ".*/.*\.\(so\|a\)\$" -exec bash -
 find com_googleapis_googleapis -type f -iname '*.so' -exec bash -c 'install_external_lib $0' {} \;
 popd
 
-# zetasql header files: protobuf generated files
+# zetasql generated files: protobuf & template generated files
 find zetasql -type f -iname "*.h" -exec install -D {} "$PREFIX"/include/{} \;
 find zetasql -iregex ".*/_virtual_includes/.*\.h\$" -exec bash -c 'install_gen_include_file $0' {} \;
-popd
+popd # bazel-bin
 
 find zetasql -type f -iname "*.h" -exec install -D {} "$PREFIX"/include/{} \;
-popd
+popd # zetasql-*
 
 popd
 

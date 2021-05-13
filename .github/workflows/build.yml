@@ -121,7 +121,7 @@ jobs:
     env:
       BAZEL_LINKOPTS: '-static-libstdc++:-lm'
       BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/parser/...'
+      target: '//zetasql/...'
       build_argv: ''
     steps:
       - uses: actions/checkout@v2
