@@ -158,6 +158,10 @@ jobs:
           cd zetasql-*
           bazel build ${{ env.build_argv }} ${{ env.target }}
 
+      - name: Find Orphan Library
+        run: |
+          ./find_orphan_so.sh
+
       - name: pack libzetasql
         run: |
           ./pack_zetasql.sh

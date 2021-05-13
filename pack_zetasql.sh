@@ -85,5 +85,4 @@ mv libzetasql.a "$PREFIX/lib"
 
 popd
 
-
 tar czf "libzetasql-$VERSION.tar.gz" "libzetasql-$VERSION"/
