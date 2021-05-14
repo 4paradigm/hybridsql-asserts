@@ -9,14 +9,11 @@ on:
 
   pull_request:
 
-env:
-  image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
-
 jobs:
   build-thirdparty:
     runs-on: ubuntu-latest
     container:
-      image: ${{ env.image }}
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
 
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +50,7 @@ jobs:
   build-llvm:
     runs-on: ubuntu-latest
     container:
-      image: ${{ env.image }}
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     steps:
       - uses: actions/checkout@v2
 
@@ -89,7 +86,7 @@ jobs:
   build-boost:
     runs-on: ubuntu-latest
     container:
-      image: ${{ env.image }}
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     steps:
       - uses: actions/checkout@v2
 
