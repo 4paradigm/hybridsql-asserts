@@ -24,7 +24,6 @@ mkdir -p "$INSTALL_DIR"
 
 unpack_and_install boost
 unpack_and_install llvm
-unpack_and_install libzetasql
 unpack_and_install libother
 
 tar czf "thirdparty-$(date +%Y-%m-%d).tar.gz" "$INSTALL_DIR"

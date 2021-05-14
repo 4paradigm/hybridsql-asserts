@@ -13,7 +13,7 @@ jobs:
   build-thirdparty:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
 
     steps:
       - uses: actions/checkout@v2
@@ -50,7 +50,7 @@ jobs:
   build-llvm:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     steps:
       - uses: actions/checkout@v2
 
@@ -86,7 +86,7 @@ jobs:
   build-boost:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     steps:
       - uses: actions/checkout@v2
 
@@ -114,68 +114,10 @@ jobs:
         with:
           path: boost-*.tar.gz
 
-  build-zetasql:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.1
-    env:
-      BAZEL_LINKOPTS: '-static-libstdc++:-lm'
-      BAZEL_LINKLIBS: '-l%:libstdc++.a'
-      target: '//zetasql/...'
-      build_argv: ''
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
-        run: |
-          ./fetch_resource.sh
-
-      - name: Setup Bazel
-        run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.8.0/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazel
-
-      - name: Install Java
-        run: |
-          yum install -y java-1.8.0-openjdk-devel
-
-      - name: build zetasql
-        run: |
-          source /opt/rh/devtoolset-8/enable
-          source /opt/rh/rh-python38/enable
-          cd src
-          unzip zetasql.zip
-          cd zetasql-*
-          bazel build ${{ env.build_argv }} ${{ env.target }}
-
-      - name: Find Orphan Library
-        run: |
-          ./find_orphan_so.sh
-
-      - name: pack libzetasql
-        run: |
-          ./pack_zetasql.sh
-
-      - name: Upload
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          path: libzetasql-*.tar.gz
-
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: ['build-thirdparty', 'build-llvm', 'build-boost', 'build-zetasql']
+    needs: ['build-thirdparty', 'build-llvm', 'build-boost']
     steps:
       - uses: actions/checkout@v2
 
