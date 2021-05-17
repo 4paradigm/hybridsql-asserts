@@ -10,7 +10,7 @@ on:
   pull_request:
 
 jobs:
-  build-thirdparty:
+  build-other:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
@@ -40,12 +40,16 @@ jobs:
       - name: build
         run: |
           ./pack_other.sh
+          mv src/apache-zookeeper-*.tar.gz .
 
       - name: Upload Artifact
         if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v2
         with:
-          path: libother-*.tar.gz
+          path: |
+            libother-*.tar.gz
+            apache-zookeeper-*.tar.gz
+
 
   build-llvm:
     runs-on: ubuntu-latest
@@ -117,7 +121,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: ['build-thirdparty', 'build-llvm', 'build-boost']
+    needs: ['build-other', 'build-llvm', 'build-boost']
     steps:
       - uses: actions/checkout@v2
 

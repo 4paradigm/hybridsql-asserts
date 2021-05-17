@@ -278,6 +278,15 @@ else
 	touch sqlite_succ
 fi
 
+tar -zxf apache-zookeeper-3.4.14.tar.gz
+pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
+autoreconf -if
+# see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
+CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX"
+make -j"$(nproc)"
+make install
+popd
+
 
 popd
 
