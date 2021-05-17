@@ -40,7 +40,6 @@ jobs:
       - name: build
         run: |
           ./pack_other.sh
-          mv src/apache-zookeeper-*.tar.gz .
 
       - name: Upload Artifact
         if: ${{ github.event_name == 'push' }}
@@ -48,7 +47,7 @@ jobs:
         with:
           path: |
             libother-*.tar.gz
-            apache-zookeeper-*.tar.gz
+            src/apache-zookeeper-*.tar.gz
 
 
   build-llvm:
