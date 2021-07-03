@@ -32,6 +32,9 @@ if [ -d '/opt/rh/rh-python38' ] ; then
     source /opt/rh/rh-python38/enable
 fi
 
+source var.sh
+ARCH=$(os_type)
+
 VERSION=$(date +%Y-%m-%d)
 
 DEPS_SOURCE="$PWD/src"
@@ -78,9 +81,10 @@ if [ -f "gflags_succ" ]; then
 else
 	tar zxf gflags-2.2.0.tar.gz
 	pushd gflags-2.2.0
-	cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC
-	cmake --build build -- "-j$(nproc)"
-    cmake --build build --target install
+	# Mac will failed in create build/ cuz the dir contains a file named 'BUILD', so we use 'cmake_build' as the build dir
+	cmake -H. -Bcmake_build -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC
+	cmake --build cmake_build -- "-j$(nproc)"
+    cmake --build cmake_build --target install
 	popd
 
 	touch gflags_succ
@@ -93,8 +97,7 @@ else
 	echo "installing zlib..."
 	tar xzf zlib-1.2.11.tar.gz
 	pushd zlib-1.2.11
-	sed -i '/CFLAGS="${CFLAGS--O3}"/c\  CFLAGS="${CFLAGS--O3} -fPIC"' configure
-	./configure --static --prefix="$DEPS_PREFIX"
+	CFLAGS="-O3 -fPIC" ./configure --static --prefix="$DEPS_PREFIX"
 	make -j"$(nproc)"
 	make install
 	popd
@@ -133,8 +136,10 @@ else
 	echo "install snappy done"
 fi
 
-if [ -f "unwind_succ" ]; then
+if [[ -f "unwind_succ" ]]; then
 	echo "unwind_exist"
+elif [[ "${ARCH}" == "Mac" ]]; then
+	echo "For Mac, libunwind doesn't need to be built separately"
 else
 	tar zxf libunwind-1.1.tar.gz
 	pushd libunwind-1.1
@@ -165,8 +170,7 @@ else
     # TODO fix compile on leveldb 1.23
 	tar zxf leveldb-1.20.tar.gz
 	pushd leveldb-1.20
-	sed -i 's/^OPT ?= -O2 -DNDEBUG/OPT ?= -O2 -DNDEBUG -fPIC/' Makefile
-	make "-j$(nproc)"
+	make "-j$(nproc)" OPT="-O2 -DNDEBUG -fPIC"
 	cp -rf include/* "$DEPS_PREFIX/include"
 	cp out-static/libleveldb.a "$DEPS_PREFIX/lib"
 	popd
@@ -280,9 +284,14 @@ fi
 
 tar -zxf apache-zookeeper-3.4.14.tar.gz
 pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
-autoreconf -if
-# see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
-CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX"
+if [[ "$ARCH" == "Mac" ]]; then
+	CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX"
+else
+	autoreconf -if
+	# see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
+	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX"
+fi
+
 make -j"$(nproc)"
 make install
 popd
