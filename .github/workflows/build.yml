@@ -193,3 +193,70 @@ jobs:
           path: |
             libother-*.tar.gz
             src/apache-zookeeper-*.tar.gz
+
+  build-llvm-mac:
+    runs-on: macos-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.8
+        with:
+          cmake-version: '3.20.x'
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build llvm
+        run: |
+          ./pack_llvm.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: llvm-*.tar.gz
+
+  build-boost-mac:
+    runs-on: macos-latest
+    container:
+      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build boost
+        run: |
+          ./pack_boost.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: boost-*.tar.gz
