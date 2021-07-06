@@ -196,8 +196,6 @@ jobs:
 
   build-llvm-mac:
     runs-on: macos-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     steps:
       - uses: actions/checkout@v2
 
@@ -232,8 +230,6 @@ jobs:
 
   build-boost-mac:
     runs-on: macos-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
     steps:
       - uses: actions/checkout@v2
 
