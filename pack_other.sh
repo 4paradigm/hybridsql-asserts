@@ -278,7 +278,7 @@ else
 	pushd sqlite-version-3.32.3
 	mkdir -p build
 	cd build
-	../configure --prefix="$DEPS_PREFIX" --disable-tcl
+	../configure --prefix="$DEPS_PREFIX" --disable-tcl --enable-shared=no
 	make -j"$(nproc)" && make install
 	popd
 	touch sqlite_succ
