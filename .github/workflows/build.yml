@@ -116,35 +116,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: boost-*.tar.gz
-
-  release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: ['build-other', 'build-llvm', 'build-boost']
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-
-      - name: Determine Version
-        working-directory: artifact
-        run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-      - name: Pack All
-        run: |
-          ./pack_all.sh
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            artifact/*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build-other-mac:
     runs-on: macos-latest
 
@@ -193,41 +164,6 @@ jobs:
           path: |
             libother-*.tar.gz
             src/apache-zookeeper-*.tar.gz
-
-  build-llvm-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
-        with:
-          cmake-version: '3.20.x'
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
-        run: |
-          ./fetch_resource.sh
-
-      - name: build llvm
-        run: |
-          ./pack_llvm.sh
-
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          path: llvm-*.tar.gz
-
   build-boost-mac:
     runs-on: macos-latest
     steps:
@@ -256,3 +192,40 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: boost-*.tar.gz
+  
+        
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: ['build-other', 'build-llvm', 'build-boost', 'build-other-mac', 'build-boost-mac']
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Determine Version
+        working-directory: artifact
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+      - name: Pack Linux All
+        evn: 
+          OS_TYPE: Linux
+        run: |
+          ./pack_all.sh
+
+      - name: Pack Mac All
+        env:
+          OS_TYPE: Mac
+        run: |
+          ./pack_all.sh
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifact/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -82,7 +82,7 @@ else
 	tar zxf gflags-2.2.0.tar.gz
 	pushd gflags-2.2.0
 	# Mac will failed in create build/ cuz the dir contains a file named 'BUILD', so we use 'cmake_build' as the build dir
-	cmake -H. -Bcmake_build -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC
+	cmake -H. -Bcmake_build -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON
 	cmake --build cmake_build -- "-j$(nproc)"
     cmake --build cmake_build --target install
 	popd
@@ -291,7 +291,7 @@ if [[ "$ARCH" == "Mac" ]]; then
 else
 	autoreconf -if
 	# see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
-	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX"
+	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX" --disable-shared
 fi
 
 make -j"$(nproc)"
@@ -301,4 +301,4 @@ popd
 
 popd
 
-tar czf "libother-$VERSION.tar.gz" "libother-$VERSION"/
+tar czf "libother-$VERSION-${ARCH}.tar.gz" "libother-$VERSION"/

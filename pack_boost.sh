@@ -50,4 +50,4 @@ popd
 
 popd
 
-tar czf boost-$VERSION-bin.tar.gz "boost-$VERSION/"
+tar czf boost-$VERSION-bin-${ARCH}.tar.gz "boost-$VERSION/"

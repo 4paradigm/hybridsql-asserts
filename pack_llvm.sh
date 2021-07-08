@@ -18,6 +18,8 @@ fi
 
 DEPS_SOURCE="$PWD/src"
 DEPS_PREFIX="$PWD/llvm-$VERSION"
+source var.sh
+ARCH=$(os_type)
 
 pushd "$DEPS_SOURCE"
 
@@ -31,4 +33,4 @@ popd
 
 popd
 
-tar czf llvm-$VERSION-bin.tar.gz "llvm-$VERSION/"
+tar czf llvm-$VERSION-bin-${ARCH}.tar.gz "llvm-$VERSION/"
