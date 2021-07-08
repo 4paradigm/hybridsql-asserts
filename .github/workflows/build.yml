@@ -211,7 +211,7 @@ jobs:
           VERSION=$(echo $VERSION | sed -e 's/^v//')
 
       - name: Pack Linux All
-        evn: 
+        env: 
           OS_TYPE: Linux
         run: |
           ./pack_all.sh
