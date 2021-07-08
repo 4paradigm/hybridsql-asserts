@@ -52,7 +52,7 @@ jobs:
           ./pack_other.sh
 
       - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v2
         with:
           path: |
