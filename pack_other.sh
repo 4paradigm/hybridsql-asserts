@@ -69,7 +69,7 @@ else
 	echo "installing glog ..."
 	tar xzf glog-0.4.0.tar.gz
 	pushd glog-0.4.0
-	./autogen.sh && CXXFLAGS=-fPIC ./configure --prefix="$DEPS_PREFIX"
+	./autogen.sh && CXXFLAGS=-fPIC ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
 	make -j"$(nproc)" install
 	popd
 	touch glog_succ
@@ -81,7 +81,8 @@ if [ -f "gflags_succ" ]; then
 else
 	tar zxf gflags-2.2.0.tar.gz
 	pushd gflags-2.2.0
-	# Mac will failed in create build/ cuz the dir contains a file named 'BUILD', so we use 'cmake_build' as the build dir
+	# Mac will failed in create build/ cuz the dir contains a file named 'BUILD', so we use 'cmake_build' as the build dir.
+	# gflags BUILD_SHARED_LIBS default is OFF. And if BUILD_SHARED_LIBS=OFF, BUILD_STATIC_LIBS will be ON.
 	cmake -H. -Bcmake_build -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC
 	cmake --build cmake_build -- "-j$(nproc)"
     cmake --build cmake_build --target install
@@ -182,6 +183,8 @@ if [ -f "openssl_succ" ]; then
 else
 	unzip OpenSSL_1_1_0.zip
 	pushd openssl-OpenSSL_1_1_0
+	# On MACOS, sed must use `-i extension` for saving backups with the specified extension.
+	# But we can give a zero-length extension, no backup will be saved.
 	sed -i'' -e 's#qw/glob#qw/:glob#' Configure
 	sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
 	./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX"

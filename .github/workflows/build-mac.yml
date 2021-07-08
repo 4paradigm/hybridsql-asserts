@@ -1,4 +1,4 @@
-name: build
+name: build-mac
 
 on:
   push:
@@ -11,9 +11,7 @@ on:
 
 jobs:
   build-other:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -32,6 +30,14 @@ jobs:
         with:
           cmake-version: '3.20.x'
 
+      - name: Install System Dependencies
+      # coreutils for nproc
+      # gnu-getopt for brpc
+        run: |
+          brew install automake
+          brew install coreutils
+          brew install gnu-getopt
+  
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
@@ -39,6 +45,10 @@ jobs:
 
       - name: build
         run: |
+          getopt -V
+          echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
+          source ~/.bash_profile
+          getopt -V
           ./pack_other.sh
 
       - name: Upload Artifact
@@ -49,11 +59,8 @@ jobs:
             libother-*.tar.gz
             src/apache-zookeeper-*.tar.gz
 
-
   build-llvm:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
 
@@ -87,9 +94,7 @@ jobs:
           path: llvm-*.tar.gz
 
   build-boost:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
 
@@ -118,7 +123,7 @@ jobs:
           path: boost-*.tar.gz
 
   release:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     if: startsWith(github.ref, 'refs/tags/v')
     needs: ['build-other', 'build-llvm', 'build-boost']
     steps:
