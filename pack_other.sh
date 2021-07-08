@@ -82,7 +82,7 @@ else
 	tar zxf gflags-2.2.0.tar.gz
 	pushd gflags-2.2.0
 	# Mac will failed in create build/ cuz the dir contains a file named 'BUILD', so we use 'cmake_build' as the build dir.
-	# gflags BUILD_SHARED_LIBS default is OFF. And if BUILD_SHARED_LIBS=OFF, BUILD_STATIC_LIBS will be ON.
+	# gflags BUILD_SHARED_LIBS default is OFF. And if BUILD_SHARED_LIBS=OFF, BUILD_STATIC_LIBS will be ON. 
 	cmake -H. -Bcmake_build -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC
 	cmake --build cmake_build -- "-j$(nproc)"
     cmake --build cmake_build --target install
