@@ -77,6 +77,11 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v1.8
         with:
           cmake-version: '3.20.x'
+      
+      - name: Install System Dependencies
+      # coreutils for nproc
+        run: |
+          brew install coreutils
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
@@ -106,6 +111,11 @@ jobs:
             src/*.tar.*
             src/*.zip
           key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+      
+      - name: Install System Dependencies
+      # coreutils for nproc
+        run: |
+          brew install coreutils
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
