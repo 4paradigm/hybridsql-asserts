@@ -149,8 +149,10 @@ jobs:
           VERSION=$(echo $VERSION | sed -e 's/^v//')
 
       - name: Pack All
+      # rename packages
         run: |
           ./pack_all.sh
+          for var in artifact/*.tar.gz; do mv "$var" "${var%.tar.gz}-mac.tar.gz"; done
 
       - name: Release
         uses: softprops/action-gh-release@v1
