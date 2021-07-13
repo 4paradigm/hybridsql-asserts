@@ -49,6 +49,54 @@ jobs:
             libother-*.tar.gz
             src/apache-zookeeper-*.tar.gz
 
+  build-other-mac:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.8
+        with:
+          cmake-version: '3.20.x'
+
+      - name: Install System Dependencies
+      # coreutils for nproc
+      # gnu-getopt for brpc
+        run: |
+          brew install automake
+          brew install coreutils
+          brew install gnu-getopt
+  
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build
+        run: |
+          getopt -V
+          echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
+          source ~/.bash_profile
+          getopt -V
+          ./pack_other.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            libother-*.tar.gz
+            src/apache-zookeeper-*.tar.gz
 
   build-llvm:
     runs-on: ubuntu-latest
@@ -86,6 +134,46 @@ jobs:
         with:
           path: llvm-*.tar.gz
 
+  build-llvm-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.8
+        with:
+          cmake-version: '3.20.x'
+      
+      - name: Install System Dependencies
+      # coreutils for nproc
+        run: |
+          brew install coreutils
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build llvm
+        run: |
+          ./pack_llvm.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: llvm-*.tar.gz
+
+
   build-boost:
     runs-on: ubuntu-latest
     container:
@@ -117,6 +205,40 @@ jobs:
         with:
           path: boost-*.tar.gz
 
+  build-boost:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Source
+        id: cache-source
+        uses: actions/cache@v2
+        with:
+          path: |
+            src/*.tar.*
+            src/*.zip
+          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+      
+      - name: Install System Dependencies
+      # coreutils for nproc
+        run: |
+          brew install coreutils
+
+      - name: download
+        if: steps.cache-source.outputs.cache-hit != 'true'
+        run: |
+          ./fetch_resource.sh
+
+      - name: build boost
+        run: |
+          ./pack_boost.sh
+
+      - name: Upload Artifact
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/upload-artifact@v2
+        with:
+          path: boost-*.tar.gz
+          
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
