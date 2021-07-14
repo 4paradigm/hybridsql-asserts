@@ -286,6 +286,6 @@ jobs:
         with:
           files: |
             linux/artifact/third*.tar.gz
-            mac/artifact/thridparty*-mac.tar.gz
+            mac/artifact/thirdparty*-mac.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
