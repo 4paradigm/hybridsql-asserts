@@ -9,6 +9,7 @@ on:
       - v*
 
   pull_request:
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: hybridsql-base
@@ -63,7 +64,7 @@ jobs:
 
       - name: Decide Push
         run: |
-          if [[ ${{ github.event_name = 'push' }} ]]; then
+          if [[ ${{ github.event_name }} = 'push' ]]; then
             echo "PUSH=true >> $GITHUB_ENV"
           else
             echo "PUSH=true >> $GITHUB_ENV"
