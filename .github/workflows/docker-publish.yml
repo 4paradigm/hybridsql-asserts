@@ -57,7 +57,7 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "main" ] && VERSION=latest
 
-          echo "TAG=$IMAGE_ID:$VERSION" >> $GITHUB_ENV
+          echo "TAGS=$IMAGE_ID:$VERSION" >> $GITHUB_ENV
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
