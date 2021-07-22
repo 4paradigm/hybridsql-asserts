@@ -34,7 +34,7 @@ if [[ "${ARCH}" == "Mac" ]]; then
 else
     ./bootstrap.sh 
 fi
-./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX" --with-regex --with-filesystem --with-date_time # TODO
+./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX" --with-regex --with-filesystem --with-date_time
 
 popd
 
