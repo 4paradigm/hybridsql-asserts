@@ -34,15 +34,16 @@ if [[ "${ARCH}" == "Mac" ]]; then
 else
     ./bootstrap.sh 
 fi
-./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX"
+./b2 link=static cxxflags=-fPIC cflags=-fPIC release install --prefix="$DEPS_PREFIX" --with-regex --with-filesystem --with-date_time # TODO
 
 popd
 
 tar xzf common-1.0.0.tar.gz
 pushd common-1.0.0
 if [[ "${ARCH}" == "Mac" ]]; then
-	sed -i '' 's/^#include <syscall.h>/#include <sys\/syscall.h>/' src/logging.cc
-	sed -i '' 's/syscall(__NR_gettid)/syscall(SYS_gettid)/' src/logging.cc
+    # 'syscall' is deprecated: first deprecated in OS X 10.12
+	sed -i '' 's/^#include <syscall.h>/#include <pthread.h>/' src/logging.cc
+	sed -i '' 's/thread_id = syscall(__NR_gettid)/pthread_threadid_np(0, \&thread_id)/' src/logging.cc
 fi
 make -j"$(nproc)" INCLUDE_PATH="-Iinclude -I$DEPS_PREFIX/include" PREFIX="$DEPS_PREFIX" install
 

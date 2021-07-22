@@ -37,6 +37,10 @@ unpack_and_install boost
 unpack_and_install llvm
 unpack_and_install libother
 
+# needs a soft link lib64->lib for Mac OS
+pushd "$INSTALL_DIR"
+ln -s lib lib64
+popd
 tar czf "$INSTALL_DIR.tar.gz" "$INSTALL_DIR"
 
 mkdir -p "$SRC_DIR"
