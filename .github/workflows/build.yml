@@ -279,13 +279,13 @@ jobs:
         run: |
           cp ../pack_all.sh .
           ./pack_all.sh
-          for var in artifact/thirdparty*.tar.gz; do mv "$var" "${var%.tar.gz}-mac.tar.gz"; done
+          for var in artifact/thirdparty*.tar.gz; do mv "$var" "${var%.tar.gz}-darwin.tar.gz"; done
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             linux/artifact/third*.tar.gz
-            mac/artifact/thirdparty*-mac.tar.gz
+            mac/artifact/thirdparty*-darwin.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
