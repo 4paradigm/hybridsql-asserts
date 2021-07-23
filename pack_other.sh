@@ -33,7 +33,7 @@ if [ -d '/opt/rh/rh-python38' ] ; then
 fi
 
 source var.sh
-ARCH=$(os_type)
+OS=$(os_type)
 
 VERSION=$(date +%Y-%m-%d)
 
@@ -139,7 +139,7 @@ fi
 
 if [[ -f "unwind_succ" ]]; then
 	echo "unwind_exist"
-elif [[ "${ARCH}" == "Mac" ]]; then
+elif [[ $OS = "darwin" ]]; then
 	echo "For Mac, libunwind doesn't need to be built separately"
 else
 	tar zxf libunwind-1.5.0.tar.gz
@@ -296,7 +296,7 @@ fi
 
 tar -zxf apache-zookeeper-3.4.14.tar.gz
 pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
-if [[ "$ARCH" == "Mac" ]]; then
+if [[ $OS = "darwin" ]]; then
 	CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
 else
 	autoreconf -if

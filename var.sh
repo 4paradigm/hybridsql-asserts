@@ -1,9 +1,9 @@
 #!/bin/bash
 
-function os_type() {
-    if [[ "${OSTYPE}" == "darwin"* ]]; then
-	    echo "Mac"
+os_type() {
+    if [[ "$OSTYPE" = "darwin"* ]]; then
+        echo "darwin"
     else
-	    echo "Linux"
+        echo "$OSTYPE"
     fi
 }
