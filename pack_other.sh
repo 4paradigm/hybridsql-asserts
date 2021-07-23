@@ -186,7 +186,7 @@ else
 	# But we can give a zero-length extension, no backup will be saved.
 	sed -i'' -e 's#qw/glob#qw/:glob#' Configure
 	sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
-    if [[ $(arch) = aarch64 ]]; then
+    if [[ $(target_arch) = aarch64 ]]; then
         ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-afalgeng no-shared
     else
         ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
@@ -215,7 +215,7 @@ if [ -f "brpc_succ" ]; then
 else
 	unzip incubator-brpc.zip
 	pushd incubator-brpc-*
-    if [[ $(arch) = aarch64 ]]; then
+    if [[ $(target_arch) = aarch64 ]]; then
         # those options not exist on arm
         sed -e '/CXXFLAGS+=-msse4 -msse4.2/s/^/#/' -i Makefile
     fi

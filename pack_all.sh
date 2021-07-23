@@ -12,8 +12,8 @@ cd "$(dirname "$0")"
 source var.sh
 
 WORKDIR=${1:-.}
-OS=${OS:-$(os_type)}
-ARCH=${ARCH:-$(arch)}
+OS=$(os_type)
+ARCH=$(target_arch)
 
 ROOT=$(pwd)
 INSTALL_DIR="thirdparty-$OS-$ARCH-$(date +%Y-%m-%d)"

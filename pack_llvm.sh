@@ -19,10 +19,10 @@ fi
 DEPS_SOURCE="$PWD/src"
 DEPS_PREFIX="$PWD/llvm-$VERSION"
 
-if [[ $(arch) = 'aarch64' ]]; then
+if [[ $(target_arch) = 'aarch64' ]]; then
     LLVM_TARGETS="AArch64"
-elif [[ $(arch) = 'x86'* ]]; then
-    LLVM_TARGETS="x86"
+elif [[ $(target_arch) = 'x86'* ]]; then
+    LLVM_TARGETS="X86"
 else
     LLVM_TARGETS=all
 fi
