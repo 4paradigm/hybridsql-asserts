@@ -142,9 +142,8 @@ if [[ -f "unwind_succ" ]]; then
 elif [[ "${ARCH}" == "Mac" ]]; then
 	echo "For Mac, libunwind doesn't need to be built separately"
 else
-	tar zxf libunwind-1.1.tar.gz
-	pushd libunwind-1.1
-	autoreconf -i
+	tar zxf libunwind-1.5.0.tar.gz
+	pushd libunwind-1.5.0
 	./configure --prefix="$DEPS_PREFIX"
     make -j"$(nproc)"
     make install
@@ -187,7 +186,11 @@ else
 	# But we can give a zero-length extension, no backup will be saved.
 	sed -i'' -e 's#qw/glob#qw/:glob#' Configure
 	sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
-	./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
+    if [[ $(arch) = aarch64 ]]; then
+        ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-afalgeng no-shared
+    else
+        ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
+    fi
 	make "-j$(nproc)"
 	make install
 	rm -rf "$DEPS_PREFIX"/lib/libssl.so*
@@ -197,7 +200,7 @@ else
 	echo "openssl done"
 fi
 
-tar xf absl.tar.gz
+unzip absl.zip
 pushd abseil-cpp-*
 cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_BUILD_TYPE=Release \
@@ -212,6 +215,10 @@ if [ -f "brpc_succ" ]; then
 else
 	unzip incubator-brpc.zip
 	pushd incubator-brpc-*
+    if [[ $(arch) = aarch64 ]]; then
+        # those options not exist on arm
+        sed -e '/CXXFLAGS+=-msse4 -msse4.2/s/^/#/' -i Makefile
+    fi
 	sh config_brpc.sh --with-glog --headers="$DEPS_PREFIX/include" --libs="$DEPS_PREFIX/lib"
 	make "-j$(nproc)" libbrpc.a output/include
 	cp -rf output/include/* "$DEPS_PREFIX/include/"
