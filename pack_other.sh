@@ -51,9 +51,9 @@ pushd "$DEPS_SOURCE"
 
 if [ ! -f gtest_succ ]; then
 	echo "installing gtest ...."
-	tar xzf googletest-release-1.10.0.tar.gz
+	tar xzf googletest-release-1.11.0.tar.gz
 
-	pushd googletest-release-1.10.0
+	pushd googletest-release-1.11.0
 	cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_CXX_FLAGS=-fPIC
     cmake --build build -- -j"$(nproc)"
     cmake --build build --target install
@@ -153,16 +153,16 @@ else
 	touch unwind_succ
 fi
 
-if [ -f "gperf_tool" ]; then
-	echo "gperf_tool exist"
+if [ -f "gperf_succ" ]; then
+	echo "gperf_succ exist"
 else
 	tar zxf gperftools-2.5.tar.gz
 	pushd gperftools-2.5
-	./configure --enable-cpu-profiler --enable-heap-checker --enable-heap-profiler --enable-static --prefix="$DEPS_PREFIX"
+	./configure --enable-cpu-profiler --enable-heap-checker --enable-heap-profiler --prefix="$DEPS_PREFIX" --enable-shared=no
 	make "-j$(nproc)"
 	make install
 	popd
-	touch gperf_tool
+	touch gperf_succ
 fi
 
 if [ -f "leveldb_succ" ]; then
@@ -183,11 +183,11 @@ if [ -f "openssl_succ" ]; then
 else
 	unzip OpenSSL_1_1_0.zip
 	pushd openssl-OpenSSL_1_1_0
-	# On MACOS, sed must use `-i extension` for saving backups with the specified extension.
+	# On Mac OS, sed must use `-i extension` for saving backups with the specified extension.
 	# But we can give a zero-length extension, no backup will be saved.
 	sed -i'' -e 's#qw/glob#qw/:glob#' Configure
 	sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
-	./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX"
+	./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
 	make "-j$(nproc)"
 	make install
 	rm -rf "$DEPS_PREFIX"/lib/libssl.so*
@@ -290,11 +290,11 @@ fi
 tar -zxf apache-zookeeper-3.4.14.tar.gz
 pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
 if [[ "$ARCH" == "Mac" ]]; then
-	CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX"
+	CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
 else
 	autoreconf -if
 	# see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
-	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX"
+	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
 fi
 
 make -j"$(nproc)"
