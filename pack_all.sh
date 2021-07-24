@@ -16,7 +16,7 @@ OS=$(os_type)
 ARCH=$(target_arch)
 
 ROOT=$(pwd)
-INSTALL_DIR="thirdparty-$OS-$ARCH-$(date +%Y-%m-%d)"
+INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)-$OS-$ARCH"
 SRC_DIR="thirdsrc-$(date +%Y-%m-%d)"
 
 export OUT="$ROOT/$WORKDIR/$INSTALL_DIR"
