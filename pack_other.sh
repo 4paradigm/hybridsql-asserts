@@ -144,7 +144,7 @@ elif [[ $OS = "darwin" ]]; then
 else
 	tar zxf libunwind-1.5.0.tar.gz
 	pushd libunwind-1.5.0
-	./configure --prefix="$DEPS_PREFIX"
+	./configure --prefix="$DEPS_PREFIX" --enable-shared=no
     make -j"$(nproc)"
     make install
 	popd
