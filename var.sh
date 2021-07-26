@@ -15,3 +15,5 @@ target_arch() {
     # if ARCH environment variable is not provided, use the host architecture
     echo "${ARCH:-$(arch)}"
 }
+_MAKEOPTS="-j$(nproc)"
+MAKEOPTS=${MAKEOPTS:-$_MAKEOPTS}

@@ -25,10 +25,10 @@ OS=$(os_type)
 DEPS_SOURCE="$PWD/src"
 DEPS_PREFIX="$PWD/boost-$VERSION"
 
-pushd "$DEPS_SOURCE"
+pushd "$DEPS_SOURCE"/
 
 tar -zxf boost_1_69_0.tar.gz
-pushd boost_1_69_0
+pushd boost_1_69_0/
 if [[ "${OS}" = "darwin" ]]; then
     ./bootstrap.sh compiler.blacklist clang -with-toolset=clang
 else
@@ -39,13 +39,13 @@ fi
 popd
 
 tar xzf common-1.0.0.tar.gz
-pushd common-1.0.0
+pushd common-1.0.0/
 if [[ "${OS}" = "darwin" ]]; then
     # 'syscall' is deprecated: first deprecated in OS X 10.12
 	sed -i '' 's/^#include <syscall.h>/#include <pthread.h>/' src/logging.cc
 	sed -i '' 's/thread_id = syscall(__NR_gettid)/pthread_threadid_np(0, \&thread_id)/' src/logging.cc
 fi
-make -j"$(nproc)" INCLUDE_PATH="-Iinclude -I$DEPS_PREFIX/include" PREFIX="$DEPS_PREFIX" install
+make $MAKEOPTS INCLUDE_PATH="-Iinclude -I$DEPS_PREFIX/include" PREFIX="$DEPS_PREFIX" install
 
 popd
 

@@ -4,6 +4,8 @@ set -e
 
 cd "$(dirname "$0")"
 
+source var.sh
+
 VERSION=9.0.0
 
 if [ -d '/opt/rh/devtoolset-8' ] ; then
@@ -27,14 +29,14 @@ else
     LLVM_TARGETS=all
 fi
 
-pushd "$DEPS_SOURCE"
+pushd "$DEPS_SOURCE"/
 
 tar xf llvm-$VERSION.src.tar.xz
-pushd llvm-$VERSION.src
+pushd llvm-$VERSION.src/
 mkdir -p build && cd build
 
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DLLVM_TARGETS_TO_BUILD="$LLVM_TARGETS"  -DCMAKE_CXX_FLAGS=-fPIC ..
-make "-j$(nproc)"
+make $MAKEOPTS
 make install
 popd
 

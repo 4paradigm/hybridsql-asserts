@@ -18,7 +18,6 @@
 # install_deps.sh: build & install dependencies.
 
 set -eE
-set -x
 
 cd "$(dirname "$0")"
 
@@ -47,7 +46,7 @@ export CFLAGS=" -O3 -fPIC"
 mkdir -p "$DEPS_PREFIX/lib" "$DEPS_PREFIX/include" "$DEPS_SOURCE"
 export PATH=${DEPS_PREFIX}/bin:$PATH
 
-pushd "$DEPS_SOURCE"
+pushd "$DEPS_SOURCE"/
 
 if [ ! -f gtest_succ ]; then
 	echo "installing gtest ...."
@@ -55,7 +54,7 @@ if [ ! -f gtest_succ ]; then
 
 	pushd googletest-release-1.11.0
 	cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_CXX_FLAGS=-fPIC
-    cmake --build build -- -j"$(nproc)"
+    cmake --build build -- $MAKEOPTS
     cmake --build build --target install
 	popd
 
@@ -70,7 +69,7 @@ else
 	tar xzf glog-0.4.0.tar.gz
 	pushd glog-0.4.0
 	./autogen.sh && CXXFLAGS=-fPIC ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
-	make -j"$(nproc)" install
+	make $MAKEOPTS install
 	popd
 	touch glog_succ
 	echo "installed glog"
@@ -84,7 +83,7 @@ else
 	# Mac will failed in create build/ cuz the dir contains a file named 'BUILD', so we use 'cmake_build' as the build dir.
 	# gflags BUILD_SHARED_LIBS default is OFF. And if BUILD_SHARED_LIBS=OFF, BUILD_STATIC_LIBS will be ON.
 	cmake -H. -Bcmake_build -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DGFLAGS_NAMESPACE=google -DCMAKE_CXX_FLAGS=-fPIC
-	cmake --build cmake_build -- "-j$(nproc)"
+	cmake --build cmake_build -- $MAKEOPTS
     cmake --build cmake_build --target install
 	popd
 
@@ -99,7 +98,7 @@ else
 	tar xzf zlib-1.2.11.tar.gz
 	pushd zlib-1.2.11
 	CFLAGS="-O3 -fPIC" ./configure --static --prefix="$DEPS_PREFIX"
-	make -j"$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 	touch zlib_succ
@@ -112,9 +111,9 @@ else
 	echo "start install protobuf ..."
 	tar zxf protobuf-3.6.1.3.tar.gz
 
-	pushd protobuf-*
+	pushd protobuf-*/
     ./autogen.sh && ./configure --disable-shared --with-pic --prefix "${DEPS_PREFIX}" CPPFLAGS=-I"$DEPS_PREFIX/include" LDFLAGS=-L"$DEPS_PREFIX/lib"
-	make -j"$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 
@@ -127,9 +126,9 @@ if [ -f "snappy_succ" ]; then
 else
 	echo "start install snappy ..."
 	tar zxf snappy-1.1.1.tar.gz
-	pushd snappy-1.1.1
+	pushd snappy-1.1.1/
 	./configure $DEPS_CONFIG
-	make "-j$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 
@@ -143,9 +142,9 @@ elif [[ $OS = "darwin" ]]; then
 	echo "For Mac, libunwind doesn't need to be built separately"
 else
 	tar zxf libunwind-1.5.0.tar.gz
-	pushd libunwind-1.5.0
+	pushd libunwind-1.5.0/
 	./configure --prefix="$DEPS_PREFIX" --enable-shared=no
-    make -j"$(nproc)"
+    make $MAKEOPTS
     make install
 	popd
 
@@ -156,9 +155,9 @@ if [ -f "gperf_succ" ]; then
 	echo "gperf_succ exist"
 else
 	tar zxf gperftools-2.5.tar.gz
-	pushd gperftools-2.5
+	pushd gperftools-2.5/
 	./configure --enable-cpu-profiler --enable-heap-checker --enable-heap-profiler --prefix="$DEPS_PREFIX" --enable-shared=no
-	make "-j$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 	touch gperf_succ
@@ -170,7 +169,7 @@ else
     # TODO fix compile on leveldb 1.23
 	tar zxf leveldb-1.20.tar.gz
 	pushd leveldb-1.20
-	make "-j$(nproc)" OPT="-O2 -DNDEBUG -fPIC"
+	make $MAKEOPTS OPT="-O2 -DNDEBUG -fPIC"
 	cp -rf include/* "$DEPS_PREFIX/include"
 	cp out-static/libleveldb.a "$DEPS_PREFIX/lib"
 	popd
@@ -191,7 +190,7 @@ else
     else
         ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
     fi
-	make "-j$(nproc)"
+	make $MAKEOPTS
 	make install
 	rm -rf "$DEPS_PREFIX"/lib/libssl.so*
 	rm -rf "$DEPS_PREFIX"/lib/libcrypto.so*
@@ -201,7 +200,7 @@ else
 fi
 
 unzip absl.zip
-pushd abseil-cpp-*
+pushd abseil-cpp-*/
 cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_STANDARD=17 -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_RUN_TESTS=OFF \
@@ -214,13 +213,13 @@ if [ -f "brpc_succ" ]; then
 	echo "brpc exist"
 else
 	unzip incubator-brpc.zip
-	pushd incubator-brpc-*
+	pushd incubator-brpc-*/
     if [[ $(target_arch) = aarch64 ]]; then
         # those options not exist on arm
         sed -e '/CXXFLAGS+=-msse4 -msse4.2/s/^/#/' -i Makefile
     fi
 	sh config_brpc.sh --with-glog --headers="$DEPS_PREFIX/include" --libs="$DEPS_PREFIX/lib"
-	make "-j$(nproc)" libbrpc.a output/include
+	make $MAKEOPTS libbrpc.a output/include
 	cp -rf output/include/* "$DEPS_PREFIX/include/"
 	cp libbrpc.a "$DEPS_PREFIX/lib"
 	popd
@@ -248,7 +247,7 @@ else
 	mkdir -p build
 	cd build
 	cmake -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_CXX_FLAGS=-fPIC -DBENCHMARK_ENABLE_GTEST_TESTS=OFF ..
-	make -j"$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 	touch benchmark_succ
@@ -261,7 +260,7 @@ else
 	pushd swig-4.0.1
 	./autogen.sh
 	./configure --without-pcre --prefix="$DEPS_PREFIX"
-	make -j"$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 	touch swig_succ
@@ -275,7 +274,7 @@ else
 	mkdir -p build
 	cd build
 	cmake -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" ..
-	make -j"$(nproc)"
+	make $MAKEOPTS
 	make install
 	popd
 	touch yaml_succ
@@ -289,13 +288,13 @@ else
 	mkdir -p build
 	cd build
 	../configure --prefix="$DEPS_PREFIX" --disable-tcl --enable-shared=no
-	make -j"$(nproc)" && make install
+	make $MAKEOPTS && make install
 	popd
 	touch sqlite_succ
 fi
 
 tar -zxf apache-zookeeper-3.4.14.tar.gz
-pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c
+pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/
 if [[ $OS = "darwin" ]]; then
 	CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
 else
@@ -304,7 +303,7 @@ else
 	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
 fi
 
-make -j"$(nproc)"
+make $MAKEOPTS
 make install
 popd
 
