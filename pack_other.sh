@@ -210,7 +210,7 @@ if [[ $ARCH = 'aarch64' ]]; then
     unzip absl.zip
     pushd abseil-cpp-2e94e5b6e152df9fa9c2fe8c1b96e1393973d32c/
 else
-    tar xzf tar xf absl.tar.gz
+    tar xf absl.tar.gz
     pushd abseil-cpp-a50ae369a30f99f79d7559002aba3413dac1bd48/
 fi
 cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
