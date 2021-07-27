@@ -14,7 +14,6 @@ else
     exit 1
 fi
 
-
 curl -SLo cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v3.21.0/cmake-3.21.0-linux-"$ARCH".tar.gz
 tar xzf cmake.tar.gz -C /usr/local/ --strip-components=1
 rm -rf cmake.tar.gz

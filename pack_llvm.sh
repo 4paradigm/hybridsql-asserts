@@ -8,12 +8,12 @@ source var.sh
 
 VERSION=9.0.0
 
-if [ -d '/opt/rh/devtoolset-8' ] ; then
+if [ -d '/opt/rh/devtoolset-8' ]; then
     # shellcheck disable=SC1091
     source /opt/rh/devtoolset-8/enable
 fi
 
-if [ -d '/opt/rh/rh-python38' ] ; then
+if [ -d '/opt/rh/rh-python38' ]; then
     # shellcheck disable=SC1091
     source /opt/rh/rh-python38/enable
 fi
@@ -39,7 +39,7 @@ tar xf llvm-$VERSION.src.tar.xz
 pushd llvm-$VERSION.src/
 mkdir -p build && cd build
 
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DLLVM_TARGETS_TO_BUILD="$LLVM_TARGETS"  -DCMAKE_CXX_FLAGS=-fPIC ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DLLVM_TARGETS_TO_BUILD="$LLVM_TARGETS" -DCMAKE_CXX_FLAGS=-fPIC ..
 make $MAKEOPTS
 make install
 popd

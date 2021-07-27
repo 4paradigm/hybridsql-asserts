@@ -26,15 +26,14 @@ cd "$(dirname "$0")"
 
 DOWNLOAD_DIR=${1:-"$PWD/src"}
 
-fetch()
-{
+fetch() {
     if [ $# -ne 2 ]; then
         echo "usage: fetch url output_file"
         exit 1
     fi
     local url=$1
     local file_name=$2
-    if [ ! -e  "$file_name" ]; then
+    if [ ! -e "$file_name" ]; then
         echo -e "${GREEN}downloading $url ...${NC}"
         curl -SL -o "$file_name" "$url"
         echo -e "${GREEN}download $url${NC}"
