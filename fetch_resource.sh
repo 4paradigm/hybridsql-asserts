@@ -59,7 +59,9 @@ fetch https://src.fedoraproject.org/lookaside/pkgs/snappy/snappy-1.1.1.tar.gz/88
 
 # gflags
 fetch https://github.com/gflags/gflags/archive/refs/tags/v2.2.0.tar.gz gflags-2.2.0.tar.gz
-# libunwind
+
+# libunwind, use 1.5.0 only for aarch64 build
+fetch https://github.com/libunwind/libunwind/archive/refs/tags/v1.1.tar.gz libunwind-1.1.tar.gz
 fetch https://github.com/libunwind/libunwind/releases/download/v1.5/libunwind-1.5.0.tar.gz libunwind-1.5.0.tar.gz
 # gperftools
 fetch https://github.com/gperftools/gperftools/releases/download/gperftools-2.5/gperftools-2.5.tar.gz gperftools-2.5.tar.gz
@@ -71,7 +73,9 @@ fetch https://github.com/openssl/openssl/archive/OpenSSL_1_1_0.zip OpenSSL_1_1_0
 fetch https://github.com/google/glog/archive/refs/tags/v0.4.0.tar.gz glog-0.4.0.tar.gz
 # bison
 fetch https://ftp.gnu.org/gnu/bison/bison-3.4.tar.gz bison-3.4.tar.gz
-# absl
+
+# absl, use 2e94e5b6e152df9fa9c2fe8c1b96e1393973d32c only for aarch64 build
+fetch https://github.com/abseil/abseil-cpp/archive/a50ae369a30f99f79d7559002aba3413dac1bd48.tar.gz absl.tar.gz
 fetch https://github.com/abseil/abseil-cpp/archive/2e94e5b6e152df9fa9c2fe8c1b96e1393973d32c.zip absl.zip
 
 # swig

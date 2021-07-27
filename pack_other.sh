@@ -33,6 +33,7 @@ fi
 
 source var.sh
 OS=$(os_type)
+ARCH=$(target_arch)
 
 VERSION=$(date +%Y-%m-%d)
 
@@ -141,8 +142,13 @@ if [[ -f "unwind_succ" ]]; then
 elif [[ $OS = "darwin" ]]; then
 	echo "For Mac, libunwind doesn't need to be built separately"
 else
-	tar zxf libunwind-1.5.0.tar.gz
-	pushd libunwind-1.5.0/
+    if [[ $ARCH = 'aarch64' ]]; then
+        tar zxf libunwind-1.5.0.tar.gz
+	    pushd libunwind-1.5.0/
+    else
+        tar xzf libunwind-1.1.tar.gz
+	    pushd libunwind-1.1/
+    fi
 	./configure --prefix="$DEPS_PREFIX" --enable-shared=no
     make $MAKEOPTS
     make install
@@ -185,7 +191,7 @@ else
 	# But we can give a zero-length extension, no backup will be saved.
 	sed -i'' -e 's#qw/glob#qw/:glob#' Configure
 	sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
-    if [[ $(target_arch) = aarch64 ]]; then
+    if [[ $ARCH = aarch64 ]]; then
         ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-afalgeng no-shared
     else
         ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
@@ -199,8 +205,13 @@ else
 	echo "openssl done"
 fi
 
-unzip absl.zip
-pushd abseil-cpp-*/
+if [[ $ARCH = 'aarch64' ]]; then
+    unzip absl.zip
+    pushd abseil-cpp-2e94e5b6e152df9fa9c2fe8c1b96e1393973d32c/
+else
+    tar xzf tar xf absl.tar.gz
+    pushd abseil-cpp-a50ae369a30f99f79d7559002aba3413dac1bd48/
+fi
 cmake -H. -Bbuild -DCMAKE_INSTALL_LIBDIR=lib \
     -DCMAKE_INSTALL_PREFIX="$DEPS_PREFIX" -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_STANDARD=17 -DABSL_USE_GOOGLETEST_HEAD=OFF -DABSL_RUN_TESTS=OFF \
@@ -214,7 +225,7 @@ if [ -f "brpc_succ" ]; then
 else
 	unzip incubator-brpc.zip
 	pushd incubator-brpc-*/
-    if [[ $(target_arch) = aarch64 ]]; then
+    if [[ $ARCH = aarch64 ]]; then
         # those options not exist on arm
         sed -e '/CXXFLAGS+=-msse4 -msse4.2/s/^/#/' -i Makefile
     fi
@@ -293,20 +304,23 @@ else
 	touch sqlite_succ
 fi
 
-tar -zxf apache-zookeeper-3.4.14.tar.gz
-pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/
-if [[ $OS = "darwin" ]]; then
-	CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
+if [ -f zookeeper_succ ]; then
+    echo "zookeeper installed"
 else
-	autoreconf -if
-	# see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
-	CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
+    tar -zxf apache-zookeeper-3.4.14.tar.gz
+    pushd zookeeper-3.4.14/zookeeper-client/zookeeper-client-c/
+    if [[ $OS = "darwin" ]]; then
+        CC="clang" CFLAGS="$CFLAGS" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
+    else
+        autoreconf -if
+        # see https://issues.apache.org/jira/browse/ZOOKEEPER-3293
+        CFLAGS="$CFLAGS -Wno-error=format-overflow=" ./configure --prefix="$DEPS_PREFIX" --enable-shared=no
+        fi
+
+        make $MAKEOPTS
+        make install
+        popd
 fi
-
-make $MAKEOPTS
-make install
-popd
-
 
 popd
 
