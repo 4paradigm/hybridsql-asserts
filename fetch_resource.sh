@@ -67,6 +67,7 @@ fetch https://github.com/gperftools/gperftools/releases/download/gperftools-2.5/
 # leveldb
 fetch https://github.com/google/leveldb/archive/refs/tags/v1.20.tar.gz leveldb-1.20.tar.gz
 # openssl
+fetch https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1k.tar.gz OpenSSL_1_1_1k.tar.gz
 fetch https://github.com/openssl/openssl/archive/OpenSSL_1_1_0.zip OpenSSL_1_1_0.zip
 # glog
 fetch https://github.com/google/glog/archive/refs/tags/v0.4.0.tar.gz glog-0.4.0.tar.gz

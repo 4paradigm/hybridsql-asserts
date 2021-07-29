@@ -186,8 +186,14 @@ fi
 if [ -f "openssl_succ" ]; then
     echo "openssl exist"
 else
-    unzip OpenSSL_1_1_0.zip
-    pushd openssl-OpenSSL_1_1_0
+    if [[ $ARCH = 'aarch64' ]]; then
+        # static link issue in arm64: https://github.com/openssl/openssl/issues/10842
+        tar xzf OpenSSL_1_1_1k.tar.gz
+        pushd openssl-OpenSSL_1_1_1k/
+    else
+        unzip OpenSSL_1_1_0.zip
+        pushd openssl-OpenSSL_1_1_0
+    fi
     # On Mac OS, sed must use `-i extension` for saving backups with the specified extension.
     # But we can give a zero-length extension, no backup will be saved.
     sed -i'' -e 's#qw/glob#qw/:glob#' Configure
