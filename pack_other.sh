@@ -190,17 +190,14 @@ else
         # static link issue in arm64: https://github.com/openssl/openssl/issues/10842
         tar xzf OpenSSL_1_1_1k.tar.gz
         pushd openssl-OpenSSL_1_1_1k/
+        ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-afalgeng no-shared
     else
         unzip OpenSSL_1_1_0.zip
         pushd openssl-OpenSSL_1_1_0
-    fi
-    # On Mac OS, sed must use `-i extension` for saving backups with the specified extension.
-    # But we can give a zero-length extension, no backup will be saved.
-    sed -i'' -e 's#qw/glob#qw/:glob#' Configure
-    sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
-    if [[ $ARCH = aarch64 ]]; then
-        ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-afalgeng no-shared
-    else
+        # On Mac OS, sed must use `-i extension` for saving backups with the specified extension.
+        # But we can give a zero-length extension, no backup will be saved.
+        sed -i'' -e 's#qw/glob#qw/:glob#' Configure
+        sed -i'' -e 's#qw/glob#qw/:glob#' test/build.info
         ./config --prefix="$DEPS_PREFIX" --openssldir="$DEPS_PREFIX" no-shared
     fi
     make $MAKEOPTS
@@ -233,8 +230,7 @@ else
     unzip incubator-brpc.zip
     pushd incubator-brpc-*/
     if [[ $ARCH = aarch64 ]]; then
-        # those options not exist on arm
-        sed -e '/CXXFLAGS+=-msse4 -msse4.2/s/^/#/' -i Makefile
+        patch -ruN < "$DEPS_SOURCE/patch/incubator-brpc-aarch64.patch"
     fi
     sh config_brpc.sh --with-glog --headers="$DEPS_PREFIX/include" --libs="$DEPS_PREFIX/lib"
     make $MAKEOPTS libbrpc.a output/include

@@ -13,7 +13,7 @@ jobs:
   build-other:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
 
     steps:
       - uses: actions/checkout@v2
@@ -26,11 +26,6 @@ jobs:
             src/*.tar.*
             src/*.zip
           key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
-        with:
-          cmake-version: '3.20.x'
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
@@ -65,7 +60,7 @@ jobs:
           key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
+        uses: jwlawson/actions-setup-cmake@v1.9
         with:
           cmake-version: '3.20.x'
 
@@ -102,7 +97,7 @@ jobs:
   build-llvm:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
     steps:
       - uses: actions/checkout@v2
 
@@ -114,11 +109,6 @@ jobs:
             src/*.tar.*
             src/*.zip
           key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
-        with:
-          cmake-version: '3.20.x'
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
@@ -150,7 +140,7 @@ jobs:
           key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
+        uses: jwlawson/actions-setup-cmake@v1.9
         with:
           cmake-version: '3.20.x'
 
@@ -179,7 +169,7 @@ jobs:
   build-boost:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
     steps:
       - uses: actions/checkout@v2
 
@@ -245,8 +235,13 @@ jobs:
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: ['build-other', 'build-llvm', 'build-boost',
-    'build-other-mac', 'build-llvm-mac', 'build-boost-mac']
+    needs:
+      - build-other
+      - build-llvm
+      - build-boost
+      - build-other-mac
+      - build-llvm-mac
+      - build-boost-mac
     steps:
       - uses: actions/checkout@v2
 
