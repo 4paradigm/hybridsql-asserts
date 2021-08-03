@@ -13,7 +13,7 @@ jobs:
   build-other:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
 
     steps:
       - uses: actions/checkout@v2
@@ -25,12 +25,7 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
-        with:
-          cmake-version: '3.20.x'
+          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
@@ -62,10 +57,10 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
+        uses: jwlawson/actions-setup-cmake@v1.9
         with:
           cmake-version: '3.20.x'
 
@@ -76,7 +71,7 @@ jobs:
           brew install automake
           brew install coreutils
           brew install gnu-getopt
-  
+
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
         run: |
@@ -102,7 +97,7 @@ jobs:
   build-llvm:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
     steps:
       - uses: actions/checkout@v2
 
@@ -113,12 +108,7 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
-        with:
-          cmake-version: '3.20.x'
+          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
@@ -147,13 +137,13 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.8
+        uses: jwlawson/actions-setup-cmake@v1.9
         with:
           cmake-version: '3.20.x'
-      
+
       - name: Install System Dependencies
       # coreutils for nproc
         run: |
@@ -179,7 +169,7 @@ jobs:
   build-boost:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.0.8
+      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
     steps:
       - uses: actions/checkout@v2
 
@@ -190,7 +180,7 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
 
       - name: download
         if: steps.cache-source.outputs.cache-hit != 'true'
@@ -219,8 +209,8 @@ jobs:
           path: |
             src/*.tar.*
             src/*.zip
-          key: ${{ runner.os }}-${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-      
+          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
+
       - name: Install System Dependencies
       # coreutils for nproc
         run: |
@@ -241,12 +231,17 @@ jobs:
         with:
           name: artifact-mac
           path: boost-*.tar.gz
-          
+
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: ['build-other', 'build-llvm', 'build-boost', 
-    'build-other-mac', 'build-llvm-mac', 'build-boost-mac']
+    needs:
+      - build-other
+      - build-llvm
+      - build-boost
+      - build-other-mac
+      - build-llvm-mac
+      - build-boost-mac
     steps:
       - uses: actions/checkout@v2
 
@@ -254,38 +249,30 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: artifact
-          path: linux/artifact
+          path: linux/
 
       - name: Download Artifacts For Mac
         uses: actions/download-artifact@v2
         with:
           name: artifact-mac
-          path: mac/artifact
+          path: darwin/
 
-      - name: Determine Version
+      - name: Pack All Linux
         run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-      - name: Pack All
-        working-directory: linux
-        run: |
-          cp ../pack_all.sh .
-          ./pack_all.sh
+          ./pack_all.sh linux
 
       - name: Pack All For Mac
-        working-directory: mac
-        # rename the mac pkg
         run: |
-          cp ../pack_all.sh .
-          ./pack_all.sh
-          for var in artifact/thirdparty*.tar.gz; do mv "$var" "${var%.tar.gz}-darwin.tar.gz"; done
+          ./pack_all.sh darwin
+        env:
+          OS: darwin
+          ARCH: x86_64
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            linux/artifact/third*.tar.gz
-            mac/artifact/thirdparty*-darwin.tar.gz
+            linux/third*.tar.gz
+            darwin/thirdparty-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

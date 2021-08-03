@@ -1,9 +1,19 @@
 #!/bin/bash
 
-function os_type() {
-    if [[ "${OSTYPE}" == "darwin"* ]]; then
-	    echo "Mac"
+os_type() {
+    # use the OS environment variable, then bash env OSTYPE
+    if [[ -n "$OS" ]]; then
+        echo "$OS"
+    elif [[ "$OSTYPE" = "darwin"* ]]; then
+        echo "darwin"
     else
-	    echo "Linux"
+        echo "$OSTYPE"
     fi
 }
+
+target_arch() {
+    # if ARCH environment variable is not provided, use the host architecture
+    echo "${ARCH:-$(arch)}"
+}
+_MAKEOPTS="-j$(nproc)"
+MAKEOPTS=${MAKEOPTS:-$_MAKEOPTS}

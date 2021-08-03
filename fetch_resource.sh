@@ -26,18 +26,19 @@ cd "$(dirname "$0")"
 
 DOWNLOAD_DIR=${1:-"$PWD/src"}
 
-fetch()
-{
+fetch() {
     if [ $# -ne 2 ]; then
         echo "usage: fetch url output_file"
         exit 1
     fi
     local url=$1
     local file_name=$2
-    if [ ! -e  "$file_name" ]; then
+    if [ ! -e "$file_name" ]; then
         echo -e "${GREEN}downloading $url ...${NC}"
         curl -SL -o "$file_name" "$url"
         echo -e "${GREEN}download $url${NC}"
+    else
+        echo "$file_name" already downloaded
     fi
 }
 
@@ -57,20 +58,25 @@ fetch https://src.fedoraproject.org/lookaside/pkgs/snappy/snappy-1.1.1.tar.gz/88
 
 # gflags
 fetch https://github.com/gflags/gflags/archive/refs/tags/v2.2.0.tar.gz gflags-2.2.0.tar.gz
-# libunwind
+
+# libunwind, use 1.5.0 only for aarch64 build
 fetch https://github.com/libunwind/libunwind/archive/refs/tags/v1.1.tar.gz libunwind-1.1.tar.gz
+fetch https://github.com/libunwind/libunwind/releases/download/v1.5/libunwind-1.5.0.tar.gz libunwind-1.5.0.tar.gz
 # gperftools
 fetch https://github.com/gperftools/gperftools/releases/download/gperftools-2.5/gperftools-2.5.tar.gz gperftools-2.5.tar.gz
 # leveldb
 fetch https://github.com/google/leveldb/archive/refs/tags/v1.20.tar.gz leveldb-1.20.tar.gz
 # openssl
+fetch https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1k.tar.gz OpenSSL_1_1_1k.tar.gz
 fetch https://github.com/openssl/openssl/archive/OpenSSL_1_1_0.zip OpenSSL_1_1_0.zip
 # glog
 fetch https://github.com/google/glog/archive/refs/tags/v0.4.0.tar.gz glog-0.4.0.tar.gz
 # bison
 fetch https://ftp.gnu.org/gnu/bison/bison-3.4.tar.gz bison-3.4.tar.gz
-# absl
+
+# absl, use 2e94e5b6e152df9fa9c2fe8c1b96e1393973d32c only for aarch64 build
 fetch https://github.com/abseil/abseil-cpp/archive/a50ae369a30f99f79d7559002aba3413dac1bd48.tar.gz absl.tar.gz
+fetch https://github.com/abseil/abseil-cpp/archive/2e94e5b6e152df9fa9c2fe8c1b96e1393973d32c.zip absl.zip
 
 # swig
 fetch https://github.com/swig/swig/archive/v4.0.1.tar.gz swig-4.0.1.tar.gz
@@ -101,7 +107,5 @@ fetch https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/zookeeper-3.4.1
 
 # baidu common
 fetch https://github.com/4paradigm/common/archive/refs/tags/v1.0.0.tar.gz common-1.0.0.tar.gz
-
-fetch https://github.com/google/zetasql/archive/5ccb05880e72ab9ff75dd6b05d7b0acce53f1ea2.zip zetasql.zip
 
 popd
