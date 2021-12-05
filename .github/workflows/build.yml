@@ -34,7 +34,8 @@ jobs:
       - name: setup deps
         if: startsWith(matrix.container, 'ubuntu')
         run: |
-          apt install -y bison python3-dev libcppunit-dev build-essential cmake autoreconf tcl pkg-config
+          apt update
+          apt install -y bison python3-dev libcppunit-dev build-essential cmake autoreconf tcl pkg-config git
 
       - name: download thirdparty source
         uses: actions/checkout@v2
