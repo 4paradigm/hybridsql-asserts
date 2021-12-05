@@ -35,12 +35,12 @@ jobs:
         if: startsWith(matrix.container, 'ubuntu')
         run: |
           apt update
-          apt install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git
+          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git
 
       - name: download thirdparty source
         uses: actions/checkout@v2
         with:
-          repository: ${{ env.OPENMLDB }}
+          repository: ${{ env.OPENMLDB_REPO }}
           ref: ${{ env.OPENMLDB_REF }}
           path: openmdb
 
