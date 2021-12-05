@@ -42,7 +42,7 @@ jobs:
         with:
           repository: ${{ env.OPENMLDB_REPO }}
           ref: ${{ env.OPENMLDB_REF }}
-          path: openmdb
+          path: openmldb
 
       - name: configure
         run: |
@@ -75,7 +75,7 @@ jobs:
         with:
           repository: ${{ env.OPENMLDB }}
           ref: ${{ env.OPENMLDB_REF }}
-          path: openmdb
+          path: openmldb
 
       - name: Install System Dependencies
       # coreutils for nproc
