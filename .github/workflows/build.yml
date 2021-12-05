@@ -9,60 +9,72 @@ on:
 
   pull_request:
 
+env:
+  OPENMLDB_REPO: aceforeverd/fedb
+  OPENMLDB_REF: build/618-compile-thirdparty
+
 jobs:
-  build-other:
+  thirdparty-linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - container: ghcr.io/aceforeverd/hybridsql-base:0.4.0
+            flags: ''
+          - container: ubuntu:20.04
+            flags: -DBUILD_ZOOKEEPER_PATCH=ON
+
     container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
+      image: ${{ matrix.container }}
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
+      - name: setup deps
+        if: startsWith(matrix.container, 'ubuntu')
         run: |
-          ./fetch_resource.sh
+          apt install -y bison python3-dev libcppunit-dev build-essential cmake autoreconf tcl pkg-config
+
+      - name: download thirdparty source
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.OPENMLDB }}
+          ref: ${{ env.OPENMLDB_REF }}
+          path: openmdb
+
+      - name: configure
+        run: |
+          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON ${{ env.flags }}
 
       - name: build
         run: |
-          ./pack_other.sh
+          cmake --build deps
 
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          path: |
-            libother-*.tar.gz
-            src/apache-zookeeper-*.tar.gz
+      - name: create archive
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          ./pack_all.sh
 
-  build-other-mac:
+      # TODO: release action
+
+  thirdparty-darwin:
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.9
         with:
           cmake-version: '3.20.x'
+
+      - name: download thirdparty source
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.OPENMLDB }}
+          ref: ${{ env.OPENMLDB_REF }}
+          path: openmdb
 
       - name: Install System Dependencies
       # coreutils for nproc
@@ -72,207 +84,17 @@ jobs:
           brew install coreutils
           brew install gnu-getopt
 
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
+      - name: configure
         run: |
-          ./fetch_resource.sh
+          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON ${{ env.flags }}
 
       - name: build
         run: |
-          getopt -V
-          echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
-          source ~/.bash_profile
-          getopt -V
-          ./pack_other.sh
+          cmake --build deps
 
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact-mac
-          path: |
-            libother-*.tar.gz
-            src/apache-zookeeper-*.tar.gz
-
-  build-llvm:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
+      - name: create archive
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          ./fetch_resource.sh
+          ./pack_all.sh
 
-      - name: build llvm
-        run: |
-          ./pack_llvm.sh
-
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          path: llvm-*.tar.gz
-
-  build-llvm-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.9
-        with:
-          cmake-version: '3.20.x'
-
-      - name: Install System Dependencies
-      # coreutils for nproc
-        run: |
-          brew install coreutils
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
-        run: |
-          ./fetch_resource.sh
-
-      - name: build llvm
-        run: |
-          ./pack_llvm.sh
-
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact-mac
-          path: llvm-*.tar.gz
-
-
-  build-boost:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/aceforeverd/hybridsql-base:0.4.0
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
-        run: |
-          ./fetch_resource.sh
-
-      - name: build boost
-        run: |
-          ./pack_boost.sh
-
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          path: boost-*.tar.gz
-
-  build-boost-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Cache Source
-        id: cache-source
-        uses: actions/cache@v2
-        with:
-          path: |
-            src/*.tar.*
-            src/*.zip
-          key: ${{ hashFiles('**/CMakeLists.txt', 'fetch_resource.sh') }}
-
-      - name: Install System Dependencies
-      # coreutils for nproc
-        run: |
-          brew install coreutils
-
-      - name: download
-        if: steps.cache-source.outputs.cache-hit != 'true'
-        run: |
-          ./fetch_resource.sh
-
-      - name: build boost
-        run: |
-          ./pack_boost.sh
-
-      - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: artifact-mac
-          path: boost-*.tar.gz
-
-  release:
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs:
-      - build-other
-      - build-llvm
-      - build-boost
-      - build-other-mac
-      - build-llvm-mac
-      - build-boost-mac
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: artifact
-          path: linux/
-
-      - name: Download Artifacts For Mac
-        uses: actions/download-artifact@v2
-        with:
-          name: artifact-mac
-          path: darwin/
-
-      - name: Pack All Linux
-        run: |
-          ./pack_all.sh linux
-
-      - name: Pack All For Mac
-        run: |
-          ./pack_all.sh darwin
-        env:
-          OS: darwin
-          ARCH: x86_64
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            linux/third*.tar.gz
-            darwin/thirdparty-*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # TODO: release action
