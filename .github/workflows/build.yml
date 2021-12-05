@@ -36,7 +36,7 @@ jobs:
         if: startsWith(matrix.container, 'ubuntu')
         run: |
           apt update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl patch
+          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl patch libtool-bin
       - name: setup deps(centos)
         if: startsWith(matrix.container, 'ghcr')
         run: |
