@@ -11,11 +11,12 @@ cd "$(dirname "$0")"
 
 source var.sh
 
-INSTALL_PREFIX=${0:-deps}
+INSTALL_PREFIX=${1:-deps}
 
 OS=$(os_type)
 ARCH=$(target_arch)
-INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)-$OS-$ARCH"
+DISTRO=$(distro)
+INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)-$OS-$ARCH-$DISTRO"
 # SRC_DIR="thirdsrc-$(date +%Y-%m-%d)"
 
 pushd "$INSTALL_PREFIX"

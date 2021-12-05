@@ -15,5 +15,11 @@ target_arch() {
     # if ARCH environment variable is not provided, use the host architecture
     echo "${ARCH:-$(arch)}"
 }
+
+distro()
+{
+    echo "${DISTRO:-"unknown"}"
+}
+
 _MAKEOPTS="-j$(nproc)"
 MAKEOPTS=${MAKEOPTS:-$_MAKEOPTS}
