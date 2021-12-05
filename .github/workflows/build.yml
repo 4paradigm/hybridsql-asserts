@@ -36,7 +36,12 @@ jobs:
         if: startsWith(matrix.container, 'ubuntu')
         run: |
           apt update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl
+          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl patch
+      - name: setup deps(centos)
+        if: startsWith(matrix.container, 'ghcr')
+        run: |
+          yum install -y patch
+
       - name: setup bazel
         run: |
           curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-linux-amd64
