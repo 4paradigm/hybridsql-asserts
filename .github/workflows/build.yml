@@ -35,7 +35,7 @@ jobs:
         if: startsWith(matrix.container, 'ubuntu')
         run: |
           apt update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git
+          DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl
       - name: setup bazel
         run: |
           curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-linux-amd64
