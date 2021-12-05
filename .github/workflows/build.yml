@@ -42,11 +42,6 @@ jobs:
         run: |
           yum install -y patch
 
-      - name: setup bazel
-        run: |
-          curl --create-dirs -SLo /usr/local/bin/bazel https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazel
-
       - name: download thirdparty source
         uses: actions/checkout@v2
         with:
@@ -56,7 +51,7 @@ jobs:
 
       - name: configure
         run: |
-          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON ${{ env.flags }}
+          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON -DWITH_ZETASQL=OFF ${{ env.flags }}
 
       - name: build
         run: |
@@ -95,11 +90,11 @@ jobs:
         # coreutils for nproc
         # gnu-getopt for brpc
         run: |
-          brew install automake coreutils gnu-getopt bazelisk
+          brew install automake coreutils gnu-getopt
 
       - name: configure
         run: |
-          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON ${{ env.flags }}
+          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON -DWITH_ZETASQL=OFF ${{ env.flags }}
 
       - name: build
         run: |
