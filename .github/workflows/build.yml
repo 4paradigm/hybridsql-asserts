@@ -12,6 +12,7 @@ on:
 env:
   OPENMLDB_REPO: aceforeverd/fedb
   OPENMLDB_REF: build/618-compile-thirdparty
+  MAKEOPTS: -j2
 
 jobs:
   thirdparty-linux:
