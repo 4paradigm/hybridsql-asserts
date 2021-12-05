@@ -35,7 +35,7 @@ jobs:
         if: startsWith(matrix.container, 'ubuntu')
         run: |
           apt update
-          apt install -y bison python3-dev libcppunit-dev build-essential cmake autoreconf tcl pkg-config git
+          apt install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git
 
       - name: download thirdparty source
         uses: actions/checkout@v2
