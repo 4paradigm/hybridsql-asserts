@@ -18,7 +18,7 @@ target_arch() {
 
 distro()
 {
-    echo "${DISTRO:-"unknown"}"
+    echo "${DISTRO:-""}"
 }
 
 _MAKEOPTS="-j$(nproc)"
