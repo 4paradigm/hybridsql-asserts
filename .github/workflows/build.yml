@@ -22,13 +22,16 @@ jobs:
         include:
           - container: ghcr.io/aceforeverd/hybridsql-base:0.4.0
             flags: ""
+            distro: centos
           - container: ubuntu:20.04
             flags: -DBUILD_ZOOKEEPER_PATCH=ON
+            distro: ubuntu
 
     container:
       image: ${{ matrix.container }}
     env:
       MAKEOPTS: -j2
+      DISTRO: ${{ matrix.distro }}
 
     steps:
       - uses: actions/checkout@v2
@@ -123,8 +126,11 @@ jobs:
 
       - name: Download Artifacts
         uses: actions/download-artifact@v2
+        with:
+          path: artifact
 
       - name: generate signature
+        working-directory: artifact
         run: |
           sha256sum third*.tar.gz > SHA256SUM
 
@@ -132,7 +138,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            deps/thirdparty*.tar.gz
-            SHA256SUM
+            artifact/thirdparty*.tar.gz
+            artifact/SHA256SUM
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -16,7 +16,10 @@ INSTALL_PREFIX=${1:-deps}
 OS=$(os_type)
 ARCH=$(target_arch)
 DISTRO=$(distro)
-INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)-$OS-$ARCH-$DISTRO"
+INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)-$OS-$ARCH"
+if [ -n "$DISTRO" ]; then
+    INSTALL_DIR="$INSTALL_DIR-$DISTRO"
+fi
 # SRC_DIR="thirdsrc-$(date +%Y-%m-%d)"
 
 pushd "$INSTALL_PREFIX"
