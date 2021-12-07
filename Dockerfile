@@ -6,7 +6,7 @@ ARG TARGETARCH
 RUN yum update -y && yum install -y centos-release-scl epel-release && yum clean all
 
 RUN yum install -y devtoolset-8 rh-git227 flex autoconf automake unzip bc expect libtool \
-    rh-python38-python-devel gettext bison xz tcl cppunit-devel rh-python38-python-wheel patch \
+    rh-python38-python-devel gettext byacc xz tcl cppunit-devel rh-python38-python-wheel patch \
     && yum clean all
 
 COPY setup_cmake.sh /
