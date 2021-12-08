@@ -10,8 +10,8 @@ on:
   pull_request:
 
 env:
-  OPENMLDB_REPO: aceforeverd/fedb
-  OPENMLDB_REF: build/618-compile-thirdparty
+  OPENMLDB_REPO: 4paradigm/OpenMLDB
+  OPENMLDB_REF: 374fff1951bad85ef6e3f135ef1a8e9ecd15d221
 
 jobs:
   thirdparty-linux:
