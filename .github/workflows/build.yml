@@ -97,7 +97,7 @@ jobs:
           path: deps/thirdparty-*.tar.gz
 
   thirdparty-darwin:
-    runs-on: macos-latest
+    runs-on: macos-10.15
     env:
       MAKEOPTS: -j3
 
