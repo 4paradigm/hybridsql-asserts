@@ -9,6 +9,20 @@ on:
 
   pull_request:
 
+  # allow run workflow manually from a commit
+  # might useful to test pull request in OpenMLDB which changes third-party files
+  workflow_dispatch:
+    inputs:
+      OPENMLDB_REPO:
+        description: OpenMLDB repo url going to fetch, can be a fork
+        required: true
+        default: 4paradigm/OpenMLDB
+        type: string
+      OPENMLDB_REF:
+        description: specific commit/tag SHA
+        required: true
+        type: string
+
 env:
   OPENMLDB_REPO: 4paradigm/OpenMLDB
   OPENMLDB_REF: 20b1cba81d827f3100f2f697a6068eb35ed61c02
@@ -41,6 +55,7 @@ jobs:
         run: |
           apt update
           DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl patch libtool-bin
+
       - name: setup deps(centos)
         if: startsWith(matrix.container, 'ghcr')
         run: |
@@ -48,9 +63,18 @@ jobs:
 
       - name: download thirdparty source
         uses: actions/checkout@v2
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           repository: ${{ env.OPENMLDB_REPO }}
           ref: ${{ env.OPENMLDB_REF }}
+          path: openmldb
+
+      - name: download thirdparty source (workflow_dispatch)
+        uses: actions/checkout@v2
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          repository: ${{ github.event.inputs.OPENMLDB_REPO }}
+          ref: ${{ github.event.inputs.OPENMLDB_REF }}
           path: openmldb
 
       - name: configure
@@ -67,7 +91,7 @@ jobs:
           ./pack_all.sh deps
 
       - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v2
         with:
           path: deps/thirdparty-*.tar.gz
@@ -120,7 +144,7 @@ jobs:
           ./pack_all.sh deps
 
       - name: Upload Artifact
-        if: ${{ github.event_name == 'push' }}
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v2
         with:
           path: deps/thirdparty-*.tar.gz
