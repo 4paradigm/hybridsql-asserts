@@ -16,9 +16,9 @@ target_arch() {
     echo "${ARCH:-$(arch)}"
 }
 
-distro()
-{
-    echo "${DISTRO:-""}"
+distro() {
+    # if DISTRO environment is not provided, default to 'unknown'
+    echo "${DISTRO:-"unknown"}"
 }
 
 _MAKEOPTS="-j$(nproc)"

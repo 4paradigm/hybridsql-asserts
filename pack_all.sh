@@ -11,14 +11,49 @@ cd "$(dirname "$0")"
 
 source var.sh
 
-INSTALL_PREFIX=${1:-deps}
+INSTALL_PREFIX=deps
+VERSION=
+
+function usage ()
+{
+    echo "Usage :  $0 [options] [--]
+
+    Options:
+    -h       Display this message
+    -i       Install prefix, default: deps
+    -n       version number, if not given, default to short git sha"
+
+}    # ----------  end of function usage  ----------
+
+while getopts ":hvi:n:" opt
+do
+  case $opt in
+
+    h)  usage; exit 0   ;;
+
+    i)  INSTALL_PREFIX=$OPTARG ;;
+
+    n)  VERSION=$OPTARG ;;
+
+    * )  echo -e "\n  Option does not exist : $OPTARG\n"
+          usage; exit 1   ;;
+
+  esac    # --- end of case ---
+done
+shift $((OPTIND-1))
+
+if [[ -z $VERSION ]]; then
+    VERSION=$(git rev-parse --short HEAD)
+fi
 
 OS=$(os_type)
 ARCH=$(target_arch)
 DISTRO=$(distro)
-INSTALL_DIR="thirdparty-$(date +%Y-%m-%d)-$OS-$ARCH"
-if [ -n "$DISTRO" ]; then
-    INSTALL_DIR="$INSTALL_DIR-$DISTRO"
+
+if [[ $OS = 'darwin' ]] ; then
+    INSTALL_DIR="thirdparty-$VERSION-$OS-$ARCH"
+else
+    INSTALL_DIR="thirdparty-$VERSION-$OS-$ARCH-$DISTRO"
 fi
 # SRC_DIR="thirdsrc-$(date +%Y-%m-%d)"
 
