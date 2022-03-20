@@ -25,7 +25,7 @@ on:
 
 env:
   OPENMLDB_REPO: aceforeverd/fedb
-  OPENMLDB_REF: cfa6a25f7898bda8f92842dfabf487eb234e7be2
+  OPENMLDB_REF: aa444f5bdf93c0db8c9bc0fa04bb486a8d465198
 
 jobs:
   thirdparty-linux:
