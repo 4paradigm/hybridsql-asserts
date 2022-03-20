@@ -118,9 +118,18 @@ jobs:
 
       - name: download thirdparty source
         uses: actions/checkout@v2
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           repository: ${{ env.OPENMLDB_REPO }}
           ref: ${{ env.OPENMLDB_REF }}
+          path: openmldb
+
+      - name: download thirdparty source (workflow_dispatch)
+        uses: actions/checkout@v2
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          repository: ${{ github.event.inputs.OPENMLDB_REPO }}
+          ref: ${{ github.event.inputs.OPENMLDB_REF }}
           path: openmldb
 
       - name: Install System Dependencies
