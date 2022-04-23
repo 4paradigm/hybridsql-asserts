@@ -24,8 +24,8 @@ on:
         type: string
 
 env:
-  OPENMLDB_REPO: aceforeverd/fedb
-  OPENMLDB_REF: aa444f5bdf93c0db8c9bc0fa04bb486a8d465198
+  OPENMLDB_REPO: 4paradigm/OpenMLDB
+  OPENMLDB_REF: 1afcf58afbea90c42a08b861dd1bd8ced85a61c1
 
 jobs:
   thirdparty-linux:
