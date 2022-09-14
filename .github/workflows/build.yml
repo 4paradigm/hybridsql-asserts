@@ -25,7 +25,7 @@ on:
 
 env:
   OPENMLDB_REPO: 4paradigm/OpenMLDB
-  OPENMLDB_REF: 5ac4667d0e71dc803ddbd04928bc4681b5ba84b6
+  OPENMLDB_REF: c10277a8c83807c400e22ca91fa1f9411b2b68eb
 
 jobs:
   thirdparty-linux:
