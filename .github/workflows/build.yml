@@ -112,7 +112,7 @@ jobs:
           xcode-version: 11.7
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.9
+        uses: jwlawson/actions-setup-cmake@v1.14
         with:
           cmake-version: "3.20.x"
 
