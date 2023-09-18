@@ -94,7 +94,7 @@ jobs:
 
       - name: Upload Artifact
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           path: deps/thirdparty-*.tar.gz
 
@@ -104,7 +104,7 @@ jobs:
       MAKEOPTS: -j3
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Xcode Select
         uses: maxim-lobanov/setup-xcode@v1
@@ -117,7 +117,7 @@ jobs:
           cmake-version: "3.20.x"
 
       - name: download thirdparty source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           repository: ${{ env.OPENMLDB_REPO }}
@@ -125,7 +125,7 @@ jobs:
           path: openmldb
 
       - name: download thirdparty source (workflow_dispatch)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         if: github.event_name == 'workflow_dispatch'
         with:
           repository: ${{ github.event.inputs.OPENMLDB_REPO }}
@@ -164,7 +164,7 @@ jobs:
     needs: ["thirdparty-linux", "thirdparty-darwin"]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
