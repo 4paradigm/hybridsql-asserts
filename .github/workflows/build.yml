@@ -48,7 +48,7 @@ jobs:
       DISTRO: ${{ matrix.distro }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: setup deps
         if: startsWith(matrix.container, 'ubuntu')
@@ -62,7 +62,7 @@ jobs:
           yum install -y patch
 
       - name: download thirdparty source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           repository: ${{ env.OPENMLDB_REPO }}
@@ -70,7 +70,7 @@ jobs:
           path: openmldb
 
       - name: download thirdparty source (workflow_dispatch)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         if: github.event_name == 'workflow_dispatch'
         with:
           repository: ${{ github.event.inputs.OPENMLDB_REPO }}
