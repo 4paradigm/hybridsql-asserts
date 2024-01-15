@@ -29,7 +29,7 @@ on:
 
 env:
   OPENMLDB_REPO: dl239/OpenMLDB
-  OPENMLDB_REF: a1762de35bc510bfc2213d1a44f56b3905b1ae8a
+  OPENMLDB_REF: 5709926e6cc3c69470b7ac850d4a949e8626f7cb
 
 jobs:
   thirdparty-linux:
