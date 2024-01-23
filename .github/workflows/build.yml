@@ -28,8 +28,8 @@ on:
         type: boolean
 
 env:
-  OPENMLDB_REPO: dl239/OpenMLDB
-  OPENMLDB_REF: 456816e3e255c246d4e159d9a8ab84874dac858e
+  OPENMLDB_REPO: 4paradigm/OpenMLDB
+  OPENMLDB_REF: 3b473abe1450477be1e9b0e91e806520c59085e5
 
 jobs:
   thirdparty-linux:
@@ -90,14 +90,14 @@ jobs:
           cmake --build deps
 
       - name: create archive
-        #if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.UPLOAD)
+        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.UPLOAD)
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           VERSION=${VERSION#v}
           ./pack_all.sh -i deps -n "$VERSION"
 
       - name: Upload Artifact
-        #if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.UPLOAD)
+        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.UPLOAD)
         uses: actions/upload-artifact@v4
         with:
           path: deps/thirdparty-*.tar.gz
