@@ -24,7 +24,7 @@ on:
         type: string
       UPLOAD:
         description: upload the built artifact for testing
-        default: false
+        default: true
         type: boolean
 
 env:
