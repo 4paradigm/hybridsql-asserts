@@ -24,7 +24,7 @@ on:
         type: string
       UPLOAD:
         description: upload the built artifact for testing
-        default: true
+        default: false
         type: boolean
 
 env:
@@ -151,14 +151,14 @@ jobs:
           cmake --build deps
 
       - name: create archive
-        if: startsWith(github.ref, 'refs/tags/v') || (github.event.inputs.UPLOAD)
+        #if: startsWith(github.ref, 'refs/tags/v') || (github.event.inputs.UPLOAD)
         run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          VERSION=${VERSION#v}
+          #VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION='0.6.1'
           ./pack_all.sh -i deps -n "$VERSION"
 
       - name: Upload Artifact
-        if: startsWith(github.ref, 'refs/tags/v') || (github.event.inputs.UPLOAD)
+        #if: startsWith(github.ref, 'refs/tags/v') || (github.event.inputs.UPLOAD)
         uses: actions/upload-artifact@v3
         with:
           path: deps/thirdparty-*.tar.gz
