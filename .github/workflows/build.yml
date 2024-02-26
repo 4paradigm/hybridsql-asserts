@@ -103,17 +103,12 @@ jobs:
           path: deps/thirdparty-*.tar.gz
 
   thirdparty-darwin:
-    runs-on: macos-11
+    runs-on: macos-12
     env:
       MAKEOPTS: -j3
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Xcode Select
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 11.7
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.14
