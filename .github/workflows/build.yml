@@ -103,7 +103,7 @@ jobs:
           path: deps/thirdparty-*.tar.gz
 
   thirdparty-darwin:
-    runs-on: macos-11
+    runs-on: macos-12
     env:
       MAKEOPTS: -j3
 
