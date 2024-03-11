@@ -185,7 +185,7 @@ jobs:
           sha256sum third*.tar.gz > SHA256SUM
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             artifact/thirdparty*.tar.gz
