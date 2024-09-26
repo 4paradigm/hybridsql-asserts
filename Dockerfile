@@ -2,12 +2,16 @@ FROM centos:7
 
 ARG TARGETARCH
 
-# hadolint ignore=DL3031
-RUN yum update -y && yum install -y centos-release-scl epel-release && yum clean all
-
-RUN yum install -y devtoolset-8 rh-git227 flex autoconf automake unzip bc expect libtool \
+COPY ./patch_yum_repo.sh /
+# hadolint ignore=DL3031,DL3033
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
+    sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
+    sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
+    yum update -y && yum install -y centos-release-scl epel-release && \
+    /patch_yum_repo.sh && \
+    yum install -y devtoolset-8 rh-git227 flex autoconf automake unzip bc expect libtool \
     rh-python38-python-devel gettext byacc xz tcl cppunit-devel rh-python38-python-wheel patch \
-    && yum clean all
+    && yum clean all && rm /patch_yum_repo.sh
 
 COPY setup_cmake.sh /
 RUN /setup_cmake.sh ${TARGETARCH} && rm -f setup_cmake.sh
