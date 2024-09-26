@@ -29,7 +29,7 @@ on:
 
 env:
   OPENMLDB_REPO: 4paradigm/OpenMLDB
-  OPENMLDB_REF: cdaf3114904620f5b7a83e3902364eb0f68b91db
+  OPENMLDB_REF: 28c3ac7ee6664d1d0b5ce7f756bb3c9a30c70769
 
 jobs:
   thirdparty-linux:
@@ -78,7 +78,7 @@ jobs:
 
       - name: configure
         run: |
-          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON -DWITH_ZETASQL=OFF ${{ env.flags }}
+          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON -DWITH_ZETASQL=OFF -DCMAKE_BUILD_TYPE=Release ${{ env.flags }}
 
       - name: build
         run: |
@@ -141,7 +141,7 @@ jobs:
 
       - name: configure
         run: |
-          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON -DWITH_ZETASQL=OFF ${{ env.flags }}
+          cmake -S openmldb/third-party -B deps -DBUILD_BUNDLED=ON -DWITH_ZETASQL=OFF -DCMAKE_BUILD_TYPE=Release ${{ env.flags }}
 
       - name: build
         run: |
