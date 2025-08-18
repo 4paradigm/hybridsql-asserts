@@ -52,7 +52,7 @@ jobs:
       DISTRO: ${{ matrix.distro }}
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
       - name: setup deps
         if: startsWith(matrix.container, 'ubuntu')
@@ -61,7 +61,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y bison python3-dev libcppunit-dev build-essential cmake autoconf tcl pkg-config git curl patch libtool-bin
 
       - name: download thirdparty source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           repository: ${{ env.OPENMLDB_REPO }}
@@ -69,7 +69,7 @@ jobs:
           path: openmldb
 
       - name: download thirdparty source (workflow_dispatch)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         if: github.event_name == 'workflow_dispatch'
         with:
           repository: ${{ github.event.inputs.OPENMLDB_REPO }}
@@ -103,7 +103,7 @@ jobs:
       MAKEOPTS: -j3
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # xcode 14.0.1 comes with macOS SDK 12.3, ref https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md#installed-sdks
       # so pre-compile zetasql requires macOS >= 12.3
@@ -118,7 +118,7 @@ jobs:
           cmake-version: "3.20.x"
 
       - name: download thirdparty source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           repository: ${{ env.OPENMLDB_REPO }}
@@ -126,7 +126,7 @@ jobs:
           path: openmldb
 
       - name: download thirdparty source (workflow_dispatch)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: github.event_name == 'workflow_dispatch'
         with:
           repository: ${{ github.event.inputs.OPENMLDB_REPO }}
@@ -169,7 +169,7 @@ jobs:
     needs: ["thirdparty-linux", "thirdparty-darwin"]
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
