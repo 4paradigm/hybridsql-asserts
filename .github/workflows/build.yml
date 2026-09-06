@@ -10,7 +10,7 @@ on:
   pull_request:
 
   # allow run workflow manually from a commit
-  # might useful to test pull request in OpenMLDB which changes third-party files
+  # might be useful to test pull request in OpenMLDB which changes third-party files
   workflow_dispatch:
     inputs:
       OPENMLDB_REPO:
