@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# merge llvm, boost, and other build artifcats into single archive
-# pack_all.sh accept one extra argument indicate which directory those sub packages locate
-# by default, sub packages consider exist in the same directory as pack_all.sh
+# merge llvm, boost, and other build artifacts into single archive
+# pack_all.sh accepts one extra argument indicating which directory those sub packages are located in
+# by default, sub packages are considered to exist in the same directory as pack_all.sh
 
 set -eE
 set -x
